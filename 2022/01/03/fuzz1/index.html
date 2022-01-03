@@ -20,21 +20,19 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="一级标题二级标题三级标题标题使用123# 一级标题## 二级标题### 三级标题">
+  <meta name="description" content="从研究者的视角看Fuzzing技术发展30年——漏洞战争  基本摘自该大佬的文章。  FuzzFuzz即模糊测试，是一种使用大量的随机数据测试系统安全的方法。 Fuzz发展史 1988年，Barton Miller首次提出Fuzz生成器的概念，用于测试Unix程序的健壮性，即用随机数据来测试程序直至崩溃，当时更多是为了验证代码质量和程序的稳定性，而非用于挖掘安全漏洞。 2001年，芬兰奥卢大学公">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MarkDown的基本使用">
-<meta property="og:url" content="http://example.com/2022/01/02/how2markdown/index.html">
+<meta property="og:title" content="fuzz学习">
+<meta property="og:url" content="http://example.com/2022/01/03/fuzz1/index.html">
 <meta property="og:site_name" content="学习记录">
-<meta property="og:description" content="一级标题二级标题三级标题标题使用123# 一级标题## 二级标题### 三级标题">
+<meta property="og:description" content="从研究者的视角看Fuzzing技术发展30年——漏洞战争  基本摘自该大佬的文章。  FuzzFuzz即模糊测试，是一种使用大量的随机数据测试系统安全的方法。 Fuzz发展史 1988年，Barton Miller首次提出Fuzz生成器的概念，用于测试Unix程序的健壮性，即用随机数据来测试程序直至崩溃，当时更多是为了验证代码质量和程序的稳定性，而非用于挖掘安全漏洞。 2001年，芬兰奥卢大学公">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
-<meta property="article:published_time" content="2022-01-02T06:36:39.000Z">
-<meta property="article:modified_time" content="2022-01-02T10:19:22.475Z">
+<meta property="article:published_time" content="2022-01-03T05:04:59.000Z">
+<meta property="article:modified_time" content="2022-01-03T10:56:45.290Z">
 <meta property="article:author" content="Anza">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
 
-<link rel="canonical" href="http://example.com/2022/01/02/how2markdown/">
+<link rel="canonical" href="http://example.com/2022/01/03/fuzz1/">
 
 
 <script id="page-configurations">
@@ -47,7 +45,7 @@
   };
 </script>
 
-  <title>MarkDown的基本使用 | 学习记录</title>
+  <title>fuzz学习 | 学习记录</title>
   
 
 
@@ -162,7 +160,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/02/how2markdown/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/03/fuzz1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
@@ -175,7 +173,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          MarkDown的基本使用
+          fuzz学习
         </h1>
 
         <div class="post-meta">
@@ -186,7 +184,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-01-02 14:36:39 / 修改时间：18:19:22" itemprop="dateCreated datePublished" datetime="2022-01-02T14:36:39+08:00">2022-01-02</time>
+              <time title="创建时间：2022-01-03 13:04:59 / 修改时间：18:56:45" itemprop="dateCreated datePublished" datetime="2022-01-03T13:04:59+08:00">2022-01-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -194,7 +192,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/other/" itemprop="url" rel="index"><span itemprop="name">other</span></a>
+                  <a href="/categories/fuzz/" itemprop="url" rel="index"><span itemprop="name">fuzz</span></a>
                 </span>
             </span>
 
@@ -209,42 +207,49 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="一级标题"><a href="#一级标题" class="headerlink" title="一级标题"></a>一级标题</h1><h2 id="二级标题"><a href="#二级标题" class="headerlink" title="二级标题"></a>二级标题</h2><h3 id="三级标题"><a href="#三级标题" class="headerlink" title="三级标题"></a>三级标题</h3><h3 id="标题使用"><a href="#标题使用" class="headerlink" title="标题使用"></a>标题使用</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 一级标题</span><br><span class="line">## 二级标题</span><br><span class="line">### 三级标题</span><br></pre></td></tr></table></figure>
-
+        <blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/riusksk/article/details/104075266">从研究者的视角看Fuzzing技术发展30年——漏洞战争</a> </p>
+<p>基本摘自该大佬的文章。</p>
+</blockquote>
+<h3 id="Fuzz"><a href="#Fuzz" class="headerlink" title="Fuzz"></a>Fuzz</h3><p>Fuzz即模糊测试，是一种使用大量的<strong>随机数据</strong>测试系统安全的方法。</p>
+<h3 id="Fuzz发展史"><a href="#Fuzz发展史" class="headerlink" title="Fuzz发展史"></a>Fuzz发展史</h3><ul>
+<li>1988年，Barton Miller首次提出Fuzz生成器的概念，用于测试Unix程序的健壮性，即用随机数据来测试程序直至<strong>崩溃</strong>，当时更多是为了验证<strong>代码质量</strong>和程序的<strong>稳定性</strong>，而非用于挖掘安全漏洞。</li>
+<li>2001年，芬兰奥卢大学公布PROTOS测试集项目的研究成果，首次将Fuzzing技术应用在<strong>网络协议</strong>的安全测试当中，针对不同的网络协议构造出不同的测试用例集。</li>
+</ul>
 <span id="more"></span>
 
-<h3 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- 1</span><br><span class="line">- 2</span><br><span class="line">	- 2.1</span><br><span class="line">	- 2.2</span><br><span class="line">- 3</span><br></pre></td></tr></table></figure>
-
 <ul>
-<li>1</li>
-<li>2<ul>
-<li>2.1</li>
-<li>2.2</li>
+<li>2002年，PROTOS逐渐成熟，Microsoft开始为该项目提供资金支持。在BlackHat USA黑客大会上，来自Immunity安全公司的Dave Aitel发表议题”An Introduction to SPIKE, the Fuzzer Creation Kit”，至此著名的Fuzzer工具<strong>SPIKE</strong>公布了。<ul>
+<li>SPIKE是基于<strong>块模板定义</strong>的网络协议测试工具，优点是<strong>支持定义可变长度数据块</strong>的能力，除生成随机数据外，它还提供一些现成的<strong>边界值生成</strong>，以提供触发崩溃的概率。</li>
 </ul>
 </li>
-<li>3</li>
+<li>2003年项目组成立了Codenomicon公司。该公司发现了著名的“心脏滴血”漏洞。</li>
+<li>2004年，发布<strong>Peach模糊测试框架</strong>。Peach最初用Python开发，后来在2007年被收购后改用C#重写。<ul>
+<li><span style="color:red">Peach</span>支持<strong>文件格式、网络协议、ActivieX控件</strong>等多种形式，通过编写**pit文件(xml格式)**来定义数据格式。</li>
 </ul>
-<h3 id="文字链接"><a href="#文字链接" class="headerlink" title="文字链接"></a>文字链接</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[我的博客链接](https://anza2001.github.io/)</span><br></pre></td></tr></table></figure>
-
-<p><a target="_blank" rel="noopener" href="https://anza2001.github.io/">我的博客链接</a></p>
-<h3 id="图片链接"><a href="#图片链接" class="headerlink" title="图片链接"></a>图片链接</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">![图片名](https://c2.im5i.com/2022/01/02/EorW6.png)</span><br><span class="line">我使用的是云图床:https://cloudimge.com/,免费但偶尔会崩</span><br></pre></td></tr></table></figure>
-
-<img src="https://c2.im5i.com/2022/01/02/EorW6.png" alt="头像" style="zoom: 25%;" />
-
-<h3 id="字体"><a href="#字体" class="headerlink" title="字体"></a>字体</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">斜线——*斜线*</span><br><span class="line">加粗——**加粗**</span><br><span class="line">代码行——`代码行`</span><br><span class="line">代码块——```</span><br><span class="line">        &lt;html&gt;</span><br><span class="line">        &lt;body&gt;代码块&lt;/body&gt;</span><br><span class="line">        &lt;/html&gt;</span><br></pre></td></tr></table></figure>
-
-<p><em>斜线</em>  <strong>加粗</strong>  <code>代码行</code></p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>代码块<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="分隔符"><a href="#分隔符" class="headerlink" title="分隔符"></a>分隔符</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--- 或 ***</span><br></pre></td></tr></table></figure>
-
-<hr>
-<hr>
-<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; 引用内容</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>引用内容</p>
-</blockquote>
+</li>
+<li>2008年，Mozilla安全团队发布了jsfunfuzz和DOMfuzz，基于<strong>JS语法</strong>模板来生成测试用例，以挖掘<strong>浏览器漏洞</strong>，后来两款工具合称<strong>funfuzz</strong>。缺点是<strong>语法模板的可扩展性并不友好</strong>，这种基于语法模板的Fuzzing方式，挖完一波后，就要求保持<strong>模板的更新</strong>才能持续产出，同时要理解测试目标在JS代码上的触发逻辑，比如JIT可通过for循环来触发代码优化，Dom UAF可通过创建Dom元素，并调用相关元素的方法来触发删除和引用，以探测是否存在UAF的可能。整体上<strong>依赖于对语法和目标原理的理解</strong>，才能构造出好的语法模板。<ul>
+<li>在funfuzz之后，业界也出现了好多款优秀的JS语法Fuzzing工具，比如grinder、nduja、crossfuzz等等。</li>
+</ul>
+</li>
+<li>2008年，发布了基于<strong>LLVM</strong>的<strong>符号执行</strong>引擎KLEE。<ul>
+<li><span style="color:red">LLVM</span>是<strong>C++<strong>编写的构架编译器的框架系统，用于优化各种语言所编写的程序的</strong>编译时间、链接时间、运行时间以及空闲时间</strong>。</li>
+<li><span style="color:red">符号执行</span>的关键思想就是，<strong>把输入变为符号值</strong>，那么程序计算的<strong>输出值就是一个符号输入值的函数</strong>。符号执行估计也是一大块内容，本文先简要介绍概念，以后再深入学习。</li>
+</ul>
+</li>
+<li>2012年，USENIX安全顶会上发布一篇论文”Fuzzing with code fragments”，研究者开发了一款叫<strong>LangFuzz</strong>的工具，他们从firefox、webkit、chromium等开源的浏览器项目以及网络上去<strong>收集js测试样本</strong>，然后用ANTLR其进行<strong>AST语法树分析</strong>，再将样本拆分成非终止语法的代码片断，放入代码池中，最后再基于代码池的代码片断对输入样本作交叉变异，主要取同类型的代码片断作替换或插入，再运行生成的变异样本进行测试。</li>
+<li>2013年，发布了<strong>afl-fuzz</strong>，首次采用<strong>源码编译插桩</strong>和<strong>QEMU模式</strong>来实现代码覆盖引导Fuzzing的方式<ul>
+<li><span style="color:red">编译插装</span>就是在代码<strong>编译期间修改已有的代码</strong>或者生成新的代码。</li>
+<li><span style="color:red">QUME</span>在执行一个程序时，从被执行程序的入口点开始对基本块翻译并执行，为了提升效率，qemu会把翻译出来的基本块存放到<strong>cache</strong> 中，当qemu要执行一个基本块时首先判断基本块是否在cache中，如果在cache中则直接执行基本块，否则会翻译基本块并执行。</li>
+</ul>
+</li>
+<li>2015年Google开源了<strong>syzkaller</strong>，一款用于Fuzzing <strong>Linux内核</strong>的工具，漏洞产出特别高。<ul>
+<li><span style="color:red">syzkaller</span>通过定义<strong>系统函数调用模板</strong>来实现，在模板中定义系统调用函数参数类型，并解决函数调用的顺序依赖和值依赖问题。</li>
+</ul>
+</li>
+<li>2016年Google提出”结构感知型Fuzzing”(Structure-Aware Fuzzing )，并基于<strong>libfuzzer与protobuf</strong>实现了<a target="_blank" rel="noopener" href="https://github.com/google/libprotobuf-mutator">libprotobuf-mutator</a>，其实现思路与syskaller相似，它<strong>弥补了peach的无覆盖引导的问题，也弥补了afl和libfuzzer对于复杂输入类型的低效变异问题</strong>。</li>
+<li>2018年，Project Zero的Samuel Groß发布一款叫<strong>fuzzilli</strong>的<strong>JS语法</strong>Fuzzer工具，它整合了语法变异、模板生成、覆盖引导等多种技术，使用自定义中间语言用于语法变异，再将变异后的中间语言转换成JS代码。</li>
+</ul>
 
     </div>
 
@@ -260,13 +265,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/01/01/hello-world/" rel="prev" title="Hello World">
-      <i class="fa fa-chevron-left"></i> Hello World
+    <a href="/2022/01/02/how2markdown/" rel="prev" title="MarkDown的基本使用">
+      <i class="fa fa-chevron-left"></i> MarkDown的基本使用
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/01/03/fuzz1/" rel="next" title="fuzz学习">
-      fuzz学习 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -325,7 +327,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E7%BA%A7%E6%A0%87%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">一级标题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E7%BA%A7%E6%A0%87%E9%A2%98"><span class="nav-number">1.1.</span> <span class="nav-text">二级标题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E7%BA%A7%E6%A0%87%E9%A2%98"><span class="nav-number">1.1.1.</span> <span class="nav-text">三级标题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E9%A2%98%E4%BD%BF%E7%94%A8"><span class="nav-number">1.1.2.</span> <span class="nav-text">标题使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%97%E8%A1%A8"><span class="nav-number">1.1.3.</span> <span class="nav-text">列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E5%AD%97%E9%93%BE%E6%8E%A5"><span class="nav-number">1.1.4.</span> <span class="nav-text">文字链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E9%93%BE%E6%8E%A5"><span class="nav-number">1.1.5.</span> <span class="nav-text">图片链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E4%BD%93"><span class="nav-number">1.1.6.</span> <span class="nav-text">字体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E9%9A%94%E7%AC%A6"><span class="nav-number">1.1.7.</span> <span class="nav-text">分隔符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">1.1.8.</span> <span class="nav-text">引用</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Fuzz"><span class="nav-number">1.</span> <span class="nav-text">Fuzz</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fuzz%E5%8F%91%E5%B1%95%E5%8F%B2"><span class="nav-number">2.</span> <span class="nav-text">Fuzz发展史</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
