@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="AFL二三事——by有毒  c语言实在读不来，就跟着大牛们的博客硬读。 Fuzz各模块功能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL源码阅读搬运">
+<meta property="og:url" content="http://example.com/2022/01/05/AFL_read/index.html">
+<meta property="og:site_name" content="学习记录">
+<meta property="og:description" content="AFL二三事——by有毒  c语言实在读不来，就跟着大牛们的博客硬读。 Fuzz各模块功能">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/05/UwkYL.png">
+<meta property="article:published_time" content="2022-01-05T11:10:18.000Z">
+<meta property="article:modified_time" content="2022-01-05T12:46:56.052Z">
+<meta property="article:author" content="Anza">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://c2.im5i.com/2022/01/05/UwkYL.png">
+
+<link rel="canonical" href="http://example.com/2022/01/05/AFL_read/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>AFL源码阅读搬运 | 学习记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">学习记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/05/AFL_read/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
+      <meta itemprop="name" content="Anza">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="学习记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AFL源码阅读搬运
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-01-05 19:10:18 / 修改时间：20:46:56" itemprop="dateCreated datePublished" datetime="2022-01-05T19:10:18+08:00">2022-01-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/fuzz/" itemprop="url" rel="index"><span itemprop="name">fuzz</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p><a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-269534.htm">AFL二三事——by有毒</a></p>
+</blockquote>
+<p>c语言实在读不来，就跟着大牛们的博客硬读。</p>
+<h1 id="Fuzz各模块功能"><a href="#Fuzz各模块功能" class="headerlink" title="Fuzz各模块功能"></a>Fuzz各模块功能</h1><img src="https://c2.im5i.com/2022/01/05/UwkYL.png" style="zoom:67%;" />
+
+<span id="more"></span>
+
+<ul>
+<li><p><strong>插桩模块</strong></p>
+<ul>
+<li><code>afl-as.h, afl-as.c, afl-gcc.c</code>：一般插桩模式，针对<strong>源码</strong>插桩，编译器可以使用gcc， clang；</li>
+<li><code>llvm_mode</code>：llvm 插桩模式，针对<strong>源码</strong>插桩，编译器使用clang；</li>
+<li><code>qemu_mode</code>：qemu 插桩模式，针对<span style="color:red;font-weight:600">二进制文件</span>插桩。</li>
+</ul>
+<p><em>编译插装就是在代码<strong>编译期间修改已有的代码</strong>或者生成新的代码</em></p>
+</li>
+<li><p><strong>fuzzer 模块</strong></p>
+<ul>
+<li><code>afl-fuzz.c</code>：fuzzer 实现的核心代码，AFL 的<strong>主体</strong>。</li>
+</ul>
+</li>
+<li><p><strong>其他辅助模块</strong></p>
+<ul>
+<li><code>afl-analyze</code>：对测试用例进行<strong>分析</strong>，通过分析给定的用例，确定是否可以发现用例中有意义的字段；</li>
+<li><code>afl-plot</code>：生成测试任务的<strong>状态图</strong>；</li>
+<li><code>afl-tmin</code>：对测试用例进行<strong>最小化</strong>；</li>
+<li><code>afl-cmin</code>：对语料库进行<strong>精简</strong>操作；</li>
+<li><code>afl-showmap</code>：对单个测试用例进行执行<strong>路径跟踪</strong>；</li>
+<li><code>afl-whatsup</code>：各<strong>并行</strong>例程fuzzing<strong>结果统计</strong>；</li>
+<li><code>afl-gotcpu</code>：查看当前<strong>CPU状态</strong>。</li>
+</ul>
+</li>
+<li><p><strong>部分头文件说明</strong></p>
+<ul>
+<li><code>alloc-inl.h</code>：定义带检测功能的<strong>内存分配和释放</strong>操作；</li>
+<li><code>config.h</code>：定义配置信息；</li>
+<li><code>debug.h</code>：与提示信息相关的宏定义；</li>
+<li><code>hash.h</code>：哈希函数的实现定义；</li>
+<li><code>types.h</code>：部分类型及宏的定义。</li>
+</ul>
+</li>
+</ul>
+<h2 id="AFL-的-gcc-——-afl-gcc-c"><a href="#AFL-的-gcc-——-afl-gcc-c" class="headerlink" title="AFL 的 gcc —— afl-gcc.c"></a>AFL 的 gcc —— afl-gcc.c</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p><code>afl-gcc</code> 是GCC 或 clang 的一个封装，常规的使用方法是在调用 <code>./configure</code> 时通过 <code>CC</code> 将路径传递给 <code>afl-gcc</code> 或 <code>afl-clang</code>。（对于 C++ 代码，使用 <code>CXX</code> 并将其指向 <code>afl-g++</code> / <code>afl-clang++</code>）<code>afl-clang</code>, <code>afl-clang++</code>, <code>afl-g++</code> 均为指向 <code>afl-gcc</code> 的一个符号链接。</p>
+<p><code>afl-gcc</code> 的主要作用是实现对于<strong>关键节点的代码插桩</strong>，属于汇编级，从而<strong>记录程序执行路径</strong>之类的关键信息，对程序的运行情况进行反馈。</p>
+<h3 id="关键变量"><a href="#关键变量" class="headerlink" title="关键变量"></a>关键变量</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> u8*  as_path;                <span class="comment">/* Path to the AFL &#x27;as&#x27; wrapper，即AFL&quot;as&quot;封装的路径 */</span></span><br><span class="line"><span class="keyword">static</span> u8** cc_params;              <span class="comment">/* Parameters passed to the real CC，即传递给实际CC的参数 */</span></span><br><span class="line"><span class="keyword">static</span> u32  cc_par_cnt = <span class="number">1</span>;         <span class="comment">/* Param count, including argv0，即包括argv0在内的参数计数 */</span></span><br><span class="line"><span class="keyword">static</span> u8   be_quiet,               <span class="comment">/* Quiet mode，即静默模式 */</span></span><br><span class="line">            clang_mode;             <span class="comment">/* Invoked as afl-clang*? 即是否使用afl-clang*模式 */</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="main函数"><a href="#main函数" class="headerlink" title="main函数"></a>main函数</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (isatty(<span class="number">2</span>) &amp;&amp; !getenv(<span class="string">&quot;AFL_QUIET&quot;</span>))</span><br><span class="line">  	SAYF(cCYA <span class="string">&quot;afl-cc &quot;</span> cBRI VERSION cRST <span class="string">&quot; by &lt;lcamtuf@google.com&gt;\n&quot;</span>);</span><br><span class="line">  <span class="keyword">else</span> </span><br><span class="line">  	be_quiet = <span class="number">1</span>;</span><br><span class="line">    </span><br><span class="line">  <span class="keyword">if</span> (argc &lt; <span class="number">2</span>) &#123;</span><br><span class="line">    SAYF(<span class="string">&quot;\n&quot;</span></span><br><span class="line">         <span class="string">&quot;This is a helper application for afl-fuzz. It serves as a drop-in replacement\n&quot;</span></span><br><span class="line">         <span class="string">&quot;for gcc or clang, letting you recompile third-party code with the required\n&quot;</span></span><br><span class="line">         <span class="string">&quot;runtime instrumentation. A common use pattern would be one of the following:\n\n&quot;</span></span><br><span class="line">         <span class="string">&quot;  CC=%s/afl-gcc ./configure\n&quot;</span></span><br><span class="line">         <span class="string">&quot;  CXX=%s/afl-g++ ./configure\n\n&quot;</span></span><br><span class="line">         <span class="string">&quot;You can specify custom next-stage toolchain via AFL_CC, AFL_CXX, and AFL_AS.\n&quot;</span></span><br><span class="line">         <span class="string">&quot;Setting AFL_HARDEN enables hardening optimizations in the compiled code.\n\n&quot;</span>,</span><br><span class="line">         BIN_PATH, BIN_PATH);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* 关键的三个函数 */</span></span><br><span class="line">  find_as(argv[<span class="number">0</span>]);			<span class="comment">//找到gcc/clang/llvm编译器</span></span><br><span class="line">  edit_params(argc, argv);	<span class="comment">//处理参数</span></span><br><span class="line">  execvp(cc_params[<span class="number">0</span>], (<span class="keyword">char</span>**)cc_params);	<span class="comment">//执行</span></span><br><span class="line"></span><br><span class="line">  FATAL(<span class="string">&quot;Oops, failed to execute &#x27;%s&#x27; - check your PATH&quot;</span>, cc_params[<span class="number">0</span>]);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>find_as(argv[0])</code>关键功能：寻找 <code>afl-as</code>，即使用的<span style="color:red">汇编器</span>。</p>
+<ul>
+<li>首先检查环境变量 <code>AFL_PATH</code> ，如果存在直接赋值给 <code>afl_path</code> ，然后检查 <code>afl_path/as</code> 文件是否可以访问，如果可以，<code>as_path = afl_path</code>。</li>
+<li>如果不存在环境变量 <code>AFL_PATH</code> ，检查 <code>argv[0]</code> （如“/Users/v4ler1an/AFL/afl-gcc”）中是否存在 “/“ ，如果存在则取最后“/” 前面的字符串作为 <code>dir</code>，然后检查 <code>dir/afl-as</code> 是否可以访问，如果可以，将 <code>as_path = dir</code> 。</li>
+<li>以上两种方式都失败，抛出异常。</li>
+</ul>
+</li>
+<li><p><code>edit_params(argc, argv)</code>关键功能：将确定好的参数放入 <code>cc_params[]</code> 数组，然后进行相应的处理。</p>
+<ul>
+<li><p>调用 <code>ch_alloc()</code> 为 <code>cc_params</code> 分配大小为 <code>(argc + 128) * 8</code> 的内存（u8的类型为1byte无符号整数）</p>
+</li>
+<li><p>检查 <code>argv[0]</code> 中是否存在<code>/</code>，如果不存在则 <code>name = argv[0]</code>，如果存在则一直找到最后一个<code>/</code>，并将其后面的字符串赋值给 <code>name</code></p>
+</li>
+<li><p>对比 <code>name</code>和固定字符串<code>afl-clang</code>：</p>
+<ul>
+<li><p>若相同，设置<code>clang_mode = 1</code>，设置环境变量<code>CLANG_ENV_VAR</code>为1</p>
+<ul>
+<li><p>对比name和固定字符串<code>afl-clang++</code></p>
+<ul>
+<li>若相同，则获取环境变量<code>AFL_CXX</code>的值，如果存在，则将该值赋值给<code>cc_params[0]</code>，否则将<code>afl-clang++</code>赋值给<code>cc_params[0]</code>。这里的<code>cc_params</code>为保存编译参数的数组；</li>
+<li>若不相同，则获取环境变量<code>AFL_CC</code>的值，如果存在，则将该值赋值给<code>cc_params[0]</code>，否则将<code>afl-clang</code>赋值给<code>cc_params[0]</code>。</li>
+</ul>
+<p><em><span style="color:blue">决定是afl-g++还是afl-gcc</span></em></p>
+</li>
+</ul>
+</li>
+<li><p>如果不相同，并且是Apple平台，会进入 <code>#ifdef __APPLE__</code>。在Apple平台下，开始对 <code>name</code> 进行对比，并通过 <code>cc_params[0] = getenv(&quot;&quot;)</code> 对<code>cc_params[0]</code>进行赋值；如果是非Apple平台，对比 <code>name</code> 和 固定字符串<code>afl-g++</code>（此处忽略对Java环境的处理过程）</p>
+<ul>
+<li><p>若相同，则获取环境变量<code>AFL_CXX</code>的值，如果存在，则将该值赋值给<code>cc_params[0]</code>，否则将<code>g++</code>赋值给<code>cc_params[0]</code>；</p>
+</li>
+<li><p>若不相同，则获取环境变量<code>AFL_CC</code>的值，如果存在，则将该值赋值给<code>cc_params[0]</code>，否则将<code>gcc</code>赋值给<code>cc_params[0]</code>。</p>
+<p><em><span style="color:blue">决定是g++还是gcc</span></em></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>进入 while 循环，遍历从<code>argv[1]</code>开始的<code>argv</code>参数：</p>
+<ul>
+<li>如果扫描到 <code>-B</code> ，<code>-B</code>选项用于设置编译器的搜索路径，直接跳过。（因为在这之前已经处理过<code>as_path</code>了）；</li>
+<li>如果扫描到 <code>-integrated-as</code>，跳过；</li>
+<li>如果扫描到 <code>-pipe</code>，跳过；</li>
+<li>如果扫描到 <code>-fsanitize=address</code> 和 <code>-fsanitize=memory</code> 告诉 gcc 检查内存访问的错误，比如数组越界之类，设置 <code>asan_set = 1；</code></li>
+<li>如果扫描到 <code>FORTIFY_SOURCE</code> ，设置 <code>fortify_set = 1</code> 。<code>FORTIFY_SOURCE</code> 主要进行缓冲区溢出问题的检查，检查的常见函数有<code>memcpy, mempcpy, memmove, memset, strcpy, stpcpy, strncpy, strcat, strncat, sprintf, vsprintf, snprintf, gets</code> 等；</li>
+<li>对 <code>cc_params</code> 进行赋值：<code>cc_params[cc_par_cnt++] = cur;</code></li>
+</ul>
+</li>
+<li><p>跳出 <code>while</code> 循环，设置其他参数：</p>
+<ul>
+<li>取出前面计算出的 <code>as_path</code> ，设置 <code>-B as_path</code> ；</li>
+</ul>
+</li>
+<li><p>如果为<code>clang_mode</code>，则设置<code>-no-integrated-as</code></p>
+<ul>
+<li>如果存在环境变量 <code>AFL_HARDEN</code>，则设置<code>-fstack-protector-all</code>。且如果没有设置 <code>fortify_set</code> ，追加 <code>-D_FORTIFY_SOURCE=2</code> ；</li>
+</ul>
+</li>
+<li><p>sanitizer相关，通过多个if进行判断：</p>
+<ul>
+<li>如果<code>asan_set</code>在前面被设置为1，则设置环境变量<code>AFL_USE_ASAN</code>为1；<ul>
+<li>如果 <code>asan_set</code> 不为1且，存在 <code>AFL_USE_ASAN</code> 环境变量，则设置<code>-U_FORTIFY_SOURCE -fsanitize=address</code>；</li>
+</ul>
+</li>
+<li>如果不存在 <code>AFL_USE_ASAN</code> 环境变量，但存在 <code>AFL_USE_MSAN</code> 环境变量，则设置<code>-fsanitize=memory</code>（不能同时指定<code>AFL_USE_ASAN</code>或者<code>AFL_USE_MSAN</code>，也不能同时指定 <code>AFL_USE_MSAN</code> 和 <code>AFL_HARDEN</code>，因为这样运行时速度过慢；<ul>
+<li>如果不存在 <code>AFL_DONT_OPTIMIZE</code> 环境变量，则设置<code>-g -O3 -funroll-loops -D__AFL_COMPILER=1 -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1</code>；</li>
+<li>如果存在 <code>AFL_NO_BUILTIN</code> 环境变量，则表示允许进行优化，设置<code>-fno-builtin-strcmp -fno-builtin-strncmp -fno-builtin-strcasecmp -fno-builtin-strncasecmp -fno-builtin-memcmp -fno-builtin-strstr -fno-builtin-strcasestr</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>最后补充<code>cc_params[cc_par_cnt] = NULL;</code>，<code>cc_params</code> 参数数组编辑完成。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="AFL-的源码插桩-——-afl-as-c"><a href="#AFL-的源码插桩-——-afl-as-c" class="headerlink" title="AFL 的源码插桩 —— afl-as.c"></a>AFL 的源码插桩 —— afl-as.c</h2><h3 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h3><p><code>afl-gcc</code> 是 GNU as 的一个封装，唯一目的是<strong>预处理由 GCC/clang 生成的汇编文</strong>件，并注入包含在 <code>afl-as.h</code> 中的插桩代码。 使用 <code>afl-gcc / afl-clang</code> 编译程序时，工具链会自动调用它。该封装的目标并不是为了实现向 <code>.s</code> 或 <code>asm</code> 代码块中插入手写的代码。</p>
+<p><code>experiment/clang_asm_normalize/</code> 中可以找到可能允许 clang 用户进行手动插入自定义代码的解决方案，GCC并不能实现该功能。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/04/peach/" rel="prev" title="peach">
+      <i class="fa fa-chevron-left"></i> peach
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Fuzz%E5%90%84%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD"><span class="nav-number">1.</span> <span class="nav-text">Fuzz各模块功能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AFL-%E7%9A%84-gcc-%E2%80%94%E2%80%94-afl-gcc-c"><span class="nav-number">1.1.</span> <span class="nav-text">AFL 的 gcc —— afl-gcc.c</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%8F%98%E9%87%8F"><span class="nav-number">1.1.2.</span> <span class="nav-text">关键变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#main%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.3.</span> <span class="nav-text">main函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AFL-%E7%9A%84%E6%BA%90%E7%A0%81%E6%8F%92%E6%A1%A9-%E2%80%94%E2%80%94-afl-as-c"><span class="nav-number">1.2.</span> <span class="nav-text">AFL 的源码插桩 —— afl-as.c</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">概述</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anza"
+      src="https://c2.im5i.com/2022/01/02/EorW6.png">
+  <p class="site-author-name" itemprop="name">Anza</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://verf1sh.github.io/" title="https:&#x2F;&#x2F;verf1sh.github.io&#x2F;" rel="noopener" target="_blank">VerF1sh</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="author" itemprop="copyrightHolder">Anza</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
