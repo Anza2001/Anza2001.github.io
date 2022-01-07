@@ -52,7 +52,7 @@
 <meta property="og:image" content="https://c2.im5i.com/2022/01/07/UVFsG.png">
 <meta property="og:image" content="https://c2.im5i.com/2022/01/07/UVhk5.png">
 <meta property="article:published_time" content="2022-01-07T07:15:00.000Z">
-<meta property="article:modified_time" content="2022-01-07T11:59:28.785Z">
+<meta property="article:modified_time" content="2022-01-07T12:15:01.090Z">
 <meta property="article:author" content="Anza">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://c2.im5i.com/2022/01/07/UgmuW.png">
@@ -209,7 +209,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-01-07 15:15:00 / 修改时间：19:59:28" itemprop="dateCreated datePublished" datetime="2022-01-07T15:15:00+08:00">2022-01-07</time>
+              <time title="创建时间：2022-01-07 15:15:00 / 修改时间：20:15:01" itemprop="dateCreated datePublished" datetime="2022-01-07T15:15:00+08:00">2022-01-07</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -317,7 +317,7 @@
 <p>同时我们看到还封装了很多 IO 函数，刚好🐟师傅写了关于io的东东。</p>
 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://verf1sh.github.io/2021/12/26/io-file%E5%B0%8F%E5%8F%99/#IO-FILE%E4%B9%8Bfwrite">io小叙之fwrite——by Verf1sh</a></p>
-<p>fwrite的主要实现在**_IO_new_file_xsputn**中，整体流程包含四个部分。</p>
+<p>fwrite的主要实现在_IO_new_file_xsputn中，整体流程包含四个部分。</p>
 <ol>
 <li>首先判断输出缓冲区还有多少剩余，如果有剩余则将目标输出数据拷贝到输出缓冲区。</li>
 <li>如果输出缓冲区没有剩余（<strong>输出缓冲区未建立也是没有剩余</strong>）或输出缓冲区不够则调用_IO_OVERFLOW建立输出缓冲区或刷新输出缓冲区。</li>
