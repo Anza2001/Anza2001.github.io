@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32gl-A.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16gl-A.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="明天有场长安“战疫”网络安全赛 - 网络安全卫士守护赛，估计是我今年为数不多的要参加的比赛了，栈就不看了，除了 ret2dlresolve之类的超高级ROP，其他应该没啥大问题。  从how2heap入门堆——verf1sh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跟着鱼师傅和how2heap重温堆">
+<meta property="og:url" content="http://example.com/2022/01/07/heap/index.html">
+<meta property="og:site_name" content="学习记录">
+<meta property="og:description" content="明天有场长安“战疫”网络安全赛 - 网络安全卫士守护赛，估计是我今年为数不多的要参加的比赛了，栈就不看了，除了 ret2dlresolve之类的超高级ROP，其他应该没啥大问题。  从how2heap入门堆——verf1sh">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UgmuW.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UgzO8.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/Uge36.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UgDfU.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/Ug4DZ.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/Uga2w.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UgO8n.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/Ug7gJ.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UgM51.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UGPss.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UGKCm.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UKwUG.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UKhvW.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UKvF5.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UKCZz.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UKNR8.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UK6y6.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UKGPw.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UKKjZ.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UKPeJ.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UKd61.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UPO84.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UVFsG.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/UVhk5.png">
+<meta property="article:published_time" content="2022-01-07T07:15:00.000Z">
+<meta property="article:modified_time" content="2022-01-07T11:59:28.785Z">
+<meta property="article:author" content="Anza">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://c2.im5i.com/2022/01/07/UgmuW.png">
+
+<link rel="canonical" href="http://example.com/2022/01/07/heap/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>跟着鱼师傅和how2heap重温堆 | 学习记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">学习记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/07/heap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
+      <meta itemprop="name" content="Anza">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="学习记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          跟着鱼师傅和how2heap重温堆
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-01-07 15:15:00 / 修改时间：19:59:28" itemprop="dateCreated datePublished" datetime="2022-01-07T15:15:00+08:00">2022-01-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/" itemprop="url" rel="index"><span itemprop="name">ctf</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/pwn/" itemprop="url" rel="index"><span itemprop="name">pwn</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>明天有场<em>长安“战疫”网络安全赛 - 网络安全卫士守护赛</em>，估计是我今年为数不多的要参加的比赛了，栈就不看了，除了 ret2dlresolve之类的超高级ROP，其他应该没啥大问题。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://verf1sh.github.io/2021/12/26/%E4%BB%8Ehow2heap%E5%85%A5%E9%97%A8%E5%A0%86/">从how2heap入门堆——verf1sh</a></p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="First-fit"><a href="#First-fit" class="headerlink" title="First_fit"></a>First_fit</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;尽管这个例子没有演示攻击效果，但是它演示了 glibc 的分配机制\n&quot;</span>);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;glibc 使用首次适应算法选择空闲的堆块\n&quot;</span>);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;如果有一个空闲堆块且足够大，那么 malloc 将选择它\n&quot;</span>);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;如果存在 use-after-free 的情况那可以利用这一特性\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;首先申请两个比较大的 chunk\n&quot;</span>);</span><br><span class="line">    <span class="keyword">char</span>* a = <span class="built_in">malloc</span>(<span class="number">0x512</span>);</span><br><span class="line">    <span class="keyword">char</span>* b = <span class="built_in">malloc</span>(<span class="number">0x256</span>);</span><br><span class="line">    <span class="keyword">char</span>* c;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;第一个 a = malloc(0x512) 在: %p\n&quot;</span>, a);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;第二个 b = malloc(0x256) 在: %p\n&quot;</span>, b);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;我们可以继续分配\n&quot;</span>);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;现在我们把 \&quot;AAAAAAAA\&quot; 这个字符串写到 a 那里 \n&quot;</span>);</span><br><span class="line">    <span class="built_in">strcpy</span>(a, <span class="string">&quot;AAAAAAAA&quot;</span>);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;第一次申请的 %p 指向 %s\n&quot;</span>, a, a);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;接下来 free 掉第一个...\n&quot;</span>);</span><br><span class="line">    <span class="built_in">free</span>(a);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;接下来只要我们申请一块小于 0x512 的 chunk，那就会分配到原本 a 那里: %p\n&quot;</span>, a);</span><br><span class="line"></span><br><span class="line">    c = <span class="built_in">malloc</span>(<span class="number">0x500</span>);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;第三次 c = malloc(0x500) 在: %p\n&quot;</span>, c);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;我们这次往里写一串 \&quot;CCCCCCCC\&quot; 到刚申请的 c 中\n&quot;</span>);</span><br><span class="line">    <span class="built_in">strcpy</span>(c, <span class="string">&quot;CCCCCCCC&quot;</span>);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;第三次申请的 c %p 指向 %s\n&quot;</span>, c, c);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;第一次申请的 a %p 指向 %s\n&quot;</span>, a, a);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;可以看到，虽然我们刚刚看的是 a 的，但它的内容却是 \&quot;CCCCCCCC\&quot;\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>利用命令<code>gcc -g first_fit.c -o first_fit</code>进行编译，生成可执行文件</p>
+<p>运行后我们看到如下</p>
+<img src="https://c2.im5i.com/2022/01/07/UgmuW.png" style="zoom:67%;" />
+
+<p>为了更好看清楚堆块是如何分配的，我们利用gdb调试执行此处关键代码。</p>
+<img src="https://c2.im5i.com/2022/01/07/UgzO8.png" style="zoom:67%;" />
+
+<p>查看堆块，此时堆块 a 为空</p>
+<img src="https://c2.im5i.com/2022/01/07/Uge36.png" style="zoom: 80%;" />
+
+<img src="https://c2.im5i.com/2022/01/07/UgDfU.png" style="zoom: 80%;" />
+
+<p>继续往下走</p>
+<img src="https://c2.im5i.com/2022/01/07/Ug4DZ.png" style="zoom:80%;" />
+
+<p>再看堆块 a 中的数据，已经填充上了”AAAAAAAA”</p>
+<img src="https://c2.im5i.com/2022/01/07/Uga2w.png" style="zoom:80%;" />
+
+<p>接下来就是释放堆块 a</p>
+<img src="https://c2.im5i.com/2022/01/07/UgO8n.png" style="zoom:80%;" />
+
+<p>我们看到堆块 a 被链入了bins中的unsorted bin (释放大小超过了fastbins的上限)，且fd和bk指针指向了&lt;main_arena+88&gt;处</p>
+<img src="https://c2.im5i.com/2022/01/07/Ug7gJ.png" style="zoom:80%;" />
+
+<img src="https://c2.im5i.com/2022/01/07/UgM51.png" style="zoom:80%;" />
+
+<p>最后我们重新申请了一波稍小的内存，并给其指针填上”CCCCCCCC”</p>
+<img src="https://c2.im5i.com/2022/01/07/UGPss.png" style="zoom:80%;" />
+
+<p>我们发现原来被释放的 a 的堆块空间也被 c 给申请去了，并填上了”CCCCCCCC”。<span style="color:red;font-weight:600">注意此时，因为 a 指针未置空，c 和 a 指针共享有这一空间，也就导致了著名的漏洞”Use After Free”</span>。</p>
+<img src="https://c2.im5i.com/2022/01/07/UGKCm.png" style="zoom:80%;" />
+
+<h2 id="Use-After-Free"><a href="#Use-After-Free" class="headerlink" title="Use After Free"></a>Use After Free</h2><p>正如字面意思，UAF表示一个内存块被释放之后再次被使用。</p>
+<p>以下是一个简单 UAF 的利用例子。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span> <span class="params">(*func_ptr)</span><span class="params">(<span class="keyword">char</span> *)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">evil_fuc</span><span class="params">(<span class="keyword">char</span> command[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    system(command);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">(<span class="keyword">char</span> content[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>,content);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    func_ptr *p1=(func_ptr*)<span class="built_in">malloc</span>(<span class="number">0x20</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;申请了4个int大小的内存&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;p1 的地址: %p\n&quot;</span>,p1);</span><br><span class="line">    p1[<span class="number">1</span>]=echo;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;把p1[1]赋值为echo函数，然后打印出\&quot;hello world\&quot;&quot;</span>);</span><br><span class="line">    p1[<span class="number">1</span>](<span class="string">&quot;hello world\n&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;free 掉 p1&quot;</span>);</span><br><span class="line">    <span class="built_in">free</span>(p1); </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;因为并没有置为null，所以p1[1]仍然是echo函数，仍然可以输出打印了\&quot;hello again\&quot;&quot;</span>);</span><br><span class="line">    p1[<span class="number">1</span>](<span class="string">&quot;hello again\n&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;接下来再去malloc一个p2，会把释放掉的p1给分配出来，可以看到他俩是同一地址的&quot;</span>);</span><br><span class="line">    func_ptr *p2=(func_ptr*)<span class="built_in">malloc</span>(<span class="number">0x20</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;p2 的地址: %p\n&quot;</span>,p2);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;p1 的地址: %p\n&quot;</span>,p1);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;然后把p2[1]给改成evil_fuc也就是system函数&quot;</span>);</span><br><span class="line">    p2[<span class="number">1</span>]=evil_fuc;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;传参调用&quot;</span>);</span><br><span class="line">    p1[<span class="number">1</span>](<span class="string">&quot;/bin/sh&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>走几步，看一步</p>
+<img src="https://c2.im5i.com/2022/01/07/UKwUG.png" style="zoom:80%;" />
+
+<p>我们看到 p1 的back指针处被 echo 函数的地址填上</p>
+<img src="https://c2.im5i.com/2022/01/07/UKhvW.png" style="zoom:80%;" />
+
+<p>以”hello world\n”为参数，调用堆上的 echo函数地址</p>
+<img src="https://c2.im5i.com/2022/01/07/UKvF5.png" style="zoom:80%;" />
+
+<p>打印出如下的”hello world”</p>
+<img src="https://c2.im5i.com/2022/01/07/UKCZz.png" style="zoom:80%;" />
+
+<p>将该指针释放 (不置零) 后，再次尝试调用 echo函数进行打印</p>
+<img src="https://c2.im5i.com/2022/01/07/UKNR8.png" style="zoom:80%;" />
+
+<p>我们<strong>仍能调用未置零的指针进行打印操作</strong></p>
+<img src="https://c2.im5i.com/2022/01/07/UK6y6.png" style="zoom:80%;" />
+
+<p>此时 bin 中有一个0x30大小的 fastbin，即p1 释放后的空间，我们将其申请回来，指针为p2，此时p1和p2共享一块地址，均为0x602010</p>
+<img src="https://c2.im5i.com/2022/01/07/UKGPw.png" style="zoom:80%;" />
+
+<img src="https://c2.im5i.com/2022/01/07/UKKjZ.png" style="zoom:80%;" />
+
+<p>我们利用p2指针修改该其堆块的back指针为 evil_fuc函数指针，再利用p1指针调用<strong>它所认为的echo函数地址</strong>，本想<code>printf(&quot;/bin/sh&quot;)</code>，却执行成了<code>system(&quot;/bin/sh&quot;)</code></p>
+<img src="https://c2.im5i.com/2022/01/07/UKPeJ.png" style="zoom:80%;" />
+
+<img src="https://c2.im5i.com/2022/01/07/UKd61.png" style="zoom:80%;" />
+
+<h3 id="printf与堆的纠葛"><a href="#printf与堆的纠葛" class="headerlink" title="printf与堆的纠葛"></a>printf与堆的纠葛</h3><p>调试的时候突然发现一个奇怪的点（上文有提到），即第一次调用 printf 后会申请一个1024大小的堆块。在知乎上看到一位大佬的解释。</p>
+<img src="https://c2.im5i.com/2022/01/07/UPO84.png" style="zoom:80%;" />
+
+<p>问了🐟师傅，🐟师傅让我直接调试，下个malloc的断点，然后c就好了（当然一直s步进也可以）。最后果真看到 printf 子栈帧里有调用 malloc 。</p>
+<img src="https://c2.im5i.com/2022/01/07/UVFsG.png" style="zoom:80%;" />
+
+<p>同时我们看到还封装了很多 IO 函数，刚好🐟师傅写了关于io的东东。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://verf1sh.github.io/2021/12/26/io-file%E5%B0%8F%E5%8F%99/#IO-FILE%E4%B9%8Bfwrite">io小叙之fwrite——by Verf1sh</a></p>
+<p>fwrite的主要实现在**_IO_new_file_xsputn**中，整体流程包含四个部分。</p>
+<ol>
+<li>首先判断输出缓冲区还有多少剩余，如果有剩余则将目标输出数据拷贝到输出缓冲区。</li>
+<li>如果输出缓冲区没有剩余（<strong>输出缓冲区未建立也是没有剩余</strong>）或输出缓冲区不够则调用_IO_OVERFLOW建立输出缓冲区或刷新输出缓冲区。</li>
+<li>输出缓冲区刷新后判断剩余的目标输出数据是否超过块的size，如果超过块的size，则不通过输出缓冲区直接以块为单位，使用sys_write输出目标数据。</li>
+<li>如果按块输出数据后还剩一点数据则调用_IO_default_xsputn将数据拷贝到输出缓冲区。</li>
+</ol>
+</blockquote>
+<p>所以出现这种情况应该是我们<span style="color:red;">缓冲区还未建立</span>的问题，而平常我们做的堆题为何几乎没出现这种情况呢？我猜测是因为出题人都会在前面<code>setvbuf</code>，设置文件流的缓冲区，如下：</p>
+<img src="https://c2.im5i.com/2022/01/07/UVhk5.png" style="zoom:80%;" />
+
+<p>我们给源码添上如上代码，果真调用 printf 就不再建立缓冲区了。又是一个小细节</p>
+<p><em>进度有些慢了，不过的确补全了好多基础知识点，明天的比赛随缘吧，堆的利用还会跟着继续下去的</em></p>
+<hr>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/07/AFL-read2/" rel="prev" title="AFL源码阅读搬运2">
+      <i class="fa fa-chevron-left"></i> AFL源码阅读搬运2
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#First-fit"><span class="nav-number">1.</span> <span class="nav-text">First_fit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-After-Free"><span class="nav-number">2.</span> <span class="nav-text">Use After Free</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#printf%E4%B8%8E%E5%A0%86%E7%9A%84%E7%BA%A0%E8%91%9B"><span class="nav-number">2.1.</span> <span class="nav-text">printf与堆的纠葛</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anza"
+      src="https://c2.im5i.com/2022/01/02/EorW6.png">
+  <p class="site-author-name" itemprop="name">Anza</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://verf1sh.github.io/" title="https:&#x2F;&#x2F;verf1sh.github.io&#x2F;" rel="noopener" target="_blank">VerF1sh</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://4xwi11.github.io/" title="https:&#x2F;&#x2F;4xwi11.github.io&#x2F;" rel="noopener" target="_blank">4XWi11</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://eternalsakura13.com/" title="https:&#x2F;&#x2F;eternalsakura13.com&#x2F;" rel="noopener" target="_blank">sakura</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="author" itemprop="copyrightHolder">Anza</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
