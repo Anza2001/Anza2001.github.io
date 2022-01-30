@@ -251,7 +251,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-30 12:57:12" itemprop="dateModified" datetime="2022-01-30T12:57:12+08:00">2022-01-30</time>
+                <time title="修改时间：2022-01-30 20:37:20" itemprop="dateModified" datetime="2022-01-30T20:37:20+08:00">2022-01-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>复盘一下 hws。全是堆题，还好当时跑去打 HGAME 了，跟着🐟师傅的 wp 复盘一遍。</p>
+          <p>复盘一下 hws。全是堆题，还好当时跑去打 HGAME 了，跟着🐟师傅的 wp 过一遍。</p>
 <h2 id="送分题"><a href="#送分题" class="headerlink" title="送分题"></a>送分题</h2><p>先复习几个 gdb 调试命令，一直记不住：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看某变量的地址 -&gt; p &amp;变量名 </span></span><br><span class="line"><span class="comment"># 示例如下</span></span><br><span class="line">p &amp;global_max_fast</span><br><span class="line">p &amp;__malloc_hook</span><br><span class="line">p &amp;environ</span><br><span class="line">p &amp;_IO_str_jumps</span><br><span class="line">p &amp;_IO_list_all</span><br><span class="line"></span><br><span class="line">p _IO_list_all      查看_IO_list_all 地址</span><br><span class="line">p _IO_list_all-&gt;file._chain     查看_IO_list_all的下一个file结构体地址</span><br><span class="line">p _IO_list_all-&gt;file._chain-&gt;_chain      同上</span><br><span class="line">p *(struct _IO_FILE_plus *)0x558df5c9c060      0x558df5c9c060为fake io file地址，查看 _IO_FILE_plus结构体</span><br><span class="line">p *(struct _IO_jump_t *)0x55b5cefb2140    查看_IO_jump_t 结构体</span><br><span class="line">p _IO_str_jumps    查看_IO_str_jumps</span><br><span class="line">p _IO_file_jumps   查看_IO_file_jumps   </span><br></pre></td></tr></table></figure>
           <!--noindex-->
