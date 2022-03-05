@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168423c1409566a239bbbcd4fdb3d265af7398961611f121107da/0.png">
 <meta property="article:published_time" content="2022-02-24T07:05:41.000Z">
-<meta property="article:modified_time" content="2022-02-25T06:49:15.878Z">
+<meta property="article:modified_time" content="2022-03-04T04:00:24.424Z">
 <meta property="article:author" content="Anza">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168423c1409566a239bbbcd4fdb3d265af7398961611f121107da/0.png">
@@ -192,7 +192,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-25 14:49:15" itemprop="dateModified" datetime="2022-02-25T14:49:15+08:00">2022-02-25</time>
+                <time title="修改时间：2022-03-04 12:00:24" itemprop="dateModified" datetime="2022-03-04T12:00:24+08:00">2022-03-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,6 +238,21 @@
 <p>在 a 左补 n 个零</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//预处理库 iomanip</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iomanip&gt;</span></span></span><br><span class="line">cout &lt;&lt; <span class="built_in">setw</span>(n) &lt;&lt; <span class="built_in">setfill</span>(<span class="string">&#x27;0&#x27;</span>) &lt;&lt; a &lt;&lt; endl;</span><br></pre></td></tr></table></figure>
 
+<h1 id="第二周"><a href="#第二周" class="headerlink" title="第二周"></a>第二周</h1><h2 id="简单变量"><a href="#简单变量" class="headerlink" title="简单变量"></a>简单变量</h2><p>声明变量</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 预处理器法</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> a 1</span></span><br><span class="line"><span class="comment">// const限定符法</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> a = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>字符串</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> dog[<span class="number">8</span>] = &#123;<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>&#125;;</span><br><span class="line"><span class="keyword">char</span> cat[<span class="number">8</span>] = &#123;<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;\0&#x27;</span>&#125;;</span><br><span class="line"><span class="comment">// dog 不是字符串, cout 打印的时候会直到 \x00 为止, 容易泄露内存</span></span><br><span class="line"><span class="comment">// cat 是字符串, cout 打印遇到 \0 就停止</span></span><br></pre></td></tr></table></figure>
+
+<p>数组初始化</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// C++11, 可省略&#x27;=&#x27;</span></span><br><span class="line"><span class="keyword">double</span> earnings[<span class="number">4</span>] &#123;<span class="number">1.2e4</span>, <span class="number">1.6e4</span>, <span class="number">1.1e4</span>, <span class="number">1.7e4</span>&#125;;</span><br><span class="line"><span class="comment">// 大括号不包含数值则置零</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> counts[<span class="number">10</span>] = &#123;&#125;</span><br><span class="line"><span class="keyword">float</span> balances[<span class="number">100</span>] &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输入</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// cin 使用空白（空格、制表符、换行符）来确定字符串的结束位置</span></span><br><span class="line">code: cin &gt;&gt; a ;</span><br><span class="line">input: Am Anza</span><br><span class="line">code: cout &lt;&lt; a ;</span><br><span class="line">output: Am</span><br><span class="line"></span><br><span class="line"><span class="comment">// cin.getline 面向行的输入</span></span><br><span class="line"><span class="comment">// 读入19个字符，最后1位用于储存&#x27;\0&#x27;</span></span><br><span class="line">code: cin.<span class="built_in">getline</span>(a, <span class="number">20</span>) ;</span><br><span class="line"></span><br><span class="line"><span class="comment">// cin.get 面向行的输入</span></span><br><span class="line"><span class="comment">// 有参数时相当于cin.getline, 没参数时代表读入一个字符(常用于读换行符)</span></span><br><span class="line">code: cin.<span class="built_in">get</span>(a, <span class="number">20</span>) ;</span><br><span class="line">      cin.<span class="built_in">get</span>() ;</span><br><span class="line"></span><br><span class="line"><span class="comment">//如下情况, 经常出现换行符被 cin.getline 读入的情况</span></span><br><span class="line">code: cin &gt;&gt; a ;</span><br><span class="line">cin.<span class="built_in">getline</span>(b, <span class="number">20</span>) ;</span><br><span class="line"><span class="comment">//因此应该写成如下</span></span><br><span class="line">code: (cin &gt;&gt; a).<span class="built_in">get</span>() ;</span><br><span class="line">cin.<span class="built_in">getline</span>(b, <span class="number">20</span>) ;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="浮点数问题"><a href="#浮点数问题" class="headerlink" title="浮点数问题"></a>浮点数问题</h2><p>浮点数的比较问题解决方法如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置误差, 并非越小越好，也非越大越好</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ERROR 1e-5</span></span><br><span class="line"><span class="comment">// a == b 应表示为如下</span></span><br><span class="line"><span class="built_in">fabs</span>(a-b) &lt; ERROR</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -256,7 +271,10 @@
     <a href="/2022/02/24/ML/" rel="prev" title="机器学习">
       <i class="fa fa-chevron-left"></i> 机器学习
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/01/words3/" rel="next" title="3月单词">
+      3月单词 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -315,7 +333,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E5%91%A8"><span class="nav-number">1.</span> <span class="nav-text">第一周</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E6%AD%A5%E5%AD%A6%E4%B9%A0c"><span class="nav-number">1.1.</span> <span class="nav-text">初步学习c++</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E5%91%A8"><span class="nav-number">1.</span> <span class="nav-text">第一周</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E6%AD%A5%E5%AD%A6%E4%B9%A0c"><span class="nav-number">1.1.</span> <span class="nav-text">初步学习c++</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E5%91%A8"><span class="nav-number">2.</span> <span class="nav-text">第二周</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%8F%98%E9%87%8F"><span class="nav-number">2.1.</span> <span class="nav-text">简单变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">浮点数问题</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -331,7 +349,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">25</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -340,6 +358,12 @@
           
         <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
