@@ -31,8 +31,19 @@
 <meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168424f1b8c047b253fc516fca76b028bda8ed601697985544c99/0.png">
 <meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168424f1b8c047b253fc589e770cac4d0698d50c60643666b93ad/0.png">
 <meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168424f1b8c047b253fc55c2abb254cca82014db731e6e2c3ad6f/0.png">
+<meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f941a0d53fc7e2471fe80e01e8818f54a5/0.png">
+<meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f9afe4dfdd70300d07c16f921393144aff/0.png">
+<meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f99e7132017cf91d81f1da503b531d07ad/0.png">
+<meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f9ffd6060e2134936137dc51a0fd2b4ec9/0.png">
+<meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f981adee70ac55467a31299fcd724a20ba/0.png">
+<meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f93b0885ce441df34df4237a589e59de6c/0.png">
+<meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f968a0777f58442b86d7cf4df8cc928082/0.png">
+<meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f9d00a530a5c353188ba3c4b4e018f9a3a/0.png">
+<meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f9061d5a3026c4bf143da7ddeed10272f9/0.png">
+<meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f907821f9c83ca51384d6cba2d30058642/0.png">
+<meta property="og:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f92f8aa079a84520eaea10d486b1b48970/0.png">
 <meta property="article:published_time" content="2022-02-24T03:14:32.000Z">
-<meta property="article:modified_time" content="2022-03-10T02:43:32.887Z">
+<meta property="article:modified_time" content="2022-03-10T03:50:13.299Z">
 <meta property="article:author" content="Anza">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://p.qlogo.cn/hy_personal/3e28f14aa05168424f1b8c047b253fc5ab790da9d358f27de8ac0b23eb6587f4/0.jpg">
@@ -195,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-10 10:43:32" itemprop="dateModified" datetime="2022-03-10T10:43:32+08:00">2022-03-10</time>
+                <time title="修改时间：2022-03-10 11:50:13" itemprop="dateModified" datetime="2022-03-10T11:50:13+08:00">2022-03-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -369,7 +380,38 @@
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Accuracy: %0.3f (+/- %0.2f)&quot;</span> % (scores.mean(), scores.std() * <span class="number">2</span>))</span><br></pre></td></tr></table></figure>
 
-<h1 id="第二周-1"><a href="#第二周-1" class="headerlink" title="第二周"></a>第二周</h1>
+<h1 id="第三周"><a href="#第三周" class="headerlink" title="第三周"></a>第三周</h1><h2 id="线性模型"><a href="#线性模型" class="headerlink" title="线性模型"></a>线性模型</h2><p>线性模型试图学得一个通过属性的线性组合来进行预测的函数。</p>
+<p>算法核心是<strong>分类和回归</strong>，任务可以抽象为：</p>
+<p>假设我们期望输入向量<code>x</code>集合，对某一结果<code>y</code>进行预测：</p>
+<img src="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f941a0d53fc7e2471fe80e01e8818f54a5/0.png" style="zoom:80%;" />
+
+<p>那<code>f</code>便是一个数学模型，当<code>f</code>是线性模型时，其基本形式为：</p>
+<img src="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f9afe4dfdd70300d07c16f921393144aff/0.png" style="zoom:80%;" />
+
+<p>当<code>w</code>和<code>b</code>确定之后，模型便能确定下来。<code>w</code>和<code>b</code>一般使用训练数据拟合、迭代或直接解出，该过程被称为“学习”。</p>
+<p>例如：西瓜有三种属性——色泽、根蒂、敲声，三个属性都影响了瓜的好坏程度，假设通过一批数据，让模型习得如下结果：</p>
+<img src="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f99e7132017cf91d81f1da503b531d07ad/0.png" style="zoom:80%;" />
+
+<p>如上便是一个通过输入属性值（色泽、根蒂、敲声）来预测瓜好坏程度的线性模型。</p>
+<h3 id="输入多维，输出一维"><a href="#输入多维，输出一维" class="headerlink" title="输入多维，输出一维"></a>输入多维，输出一维</h3><img src="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f9ffd6060e2134936137dc51a0fd2b4ec9/0.png" style="zoom:80%;" />
+
+<img src="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f981adee70ac55467a31299fcd724a20ba/0.png" style="zoom:80%;" />
+
+<img src="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f93b0885ce441df34df4237a589e59de6c/0.png" style="zoom:80%;" />
+
+<h3 id="输入多维，输入多维"><a href="#输入多维，输入多维" class="headerlink" title="输入多维，输入多维"></a>输入多维，输入多维</h3><img src="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f968a0777f58442b86d7cf4df8cc928082/0.png" style="zoom:80%;" />
+
+<img src="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f9d00a530a5c353188ba3c4b4e018f9a3a/0.png" style="zoom:80%;" />
+
+<h3 id="逻辑回归"><a href="#逻辑回归" class="headerlink" title="逻辑回归"></a>逻辑回归</h3><img src="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f9061d5a3026c4bf143da7ddeed10272f9/0.png" style="zoom:80%;" />
+
+<img src="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f907821f9c83ca51384d6cba2d30058642/0.png" style="zoom:80%;" />
+
+<p>线性模型算是机器学习全部分类算法中最基础部分，本文做一简单记录，线性模型形式简单，清晰可数学化解释，但是对数据的拟合能力有限。</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/90917024">参照知乎《线性模型——机器学习入门算法》，作者：Algernon</a></p>
+<h3 id="线性判别分析——LDA"><a href="#线性判别分析——LDA" class="headerlink" title="线性判别分析——LDA"></a>线性判别分析——LDA</h3><p>LDA是一种经典的线性学习方法，最初用于解决<strong>二分类</strong>问题。</p>
+<p>LDA思想十分朴素：给定训练样例集，设法将样例<strong>投影到一个直线</strong>上，使得<span style="color:red;font-weight:550">同类</span>样例的投影点<span style="color:red;font-weight:550">尽可能近</span>、<span style="color:blue;font-weight:550">异类</span>样例的投影点<span style="color:blue;font-weight:550">尽可能远离</span>。在对新样本进行分类时，将其投影到同样的这条直线上，再根据投影点的位置来确定新样本的类别。</p>
+<img src="https://p.qlogo.cn/hy_personal/3e28f14aa05168422fe4e029a60331f92f8aa079a84520eaea10d486b1b48970/0.png" style="zoom:80%;" />
     </div>
 
     
@@ -449,7 +491,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E5%91%A8"><span class="nav-number">1.</span> <span class="nav-text">第一周</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CNN"><span class="nav-number">1.2.</span> <span class="nav-text">CNN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RNN%E2%80%94%E2%80%94%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">1.3.</span> <span class="nav-text">RNN——循环神经网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LSTM%E5%AF%B9RNN%E7%9A%84%E8%A1%A5%E6%BC%8F"><span class="nav-number">1.4.</span> <span class="nav-text">LSTM对RNN的补漏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#one-hot%E5%90%91%E9%87%8F"><span class="nav-number">1.5.</span> <span class="nav-text">one-hot向量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96"><span class="nav-number">1.6.</span> <span class="nav-text">特征提取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">1.7.</span> <span class="nav-text">基础概念</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E5%91%A8"><span class="nav-number">2.</span> <span class="nav-text">第二周</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5-1"><span class="nav-number">2.1.</span> <span class="nav-text">基础概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9"><span class="nav-number">2.2.</span> <span class="nav-text">模型选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Scikit-Learn%E5%B7%A5%E5%85%B7%E5%AD%A6%E4%B9%A0"><span class="nav-number">2.3.</span> <span class="nav-text">Scikit Learn工具学习</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E5%91%A8-1"><span class="nav-number">3.</span> <span class="nav-text">第二周</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E5%91%A8"><span class="nav-number">1.</span> <span class="nav-text">第一周</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CNN"><span class="nav-number">1.2.</span> <span class="nav-text">CNN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RNN%E2%80%94%E2%80%94%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">1.3.</span> <span class="nav-text">RNN——循环神经网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LSTM%E5%AF%B9RNN%E7%9A%84%E8%A1%A5%E6%BC%8F"><span class="nav-number">1.4.</span> <span class="nav-text">LSTM对RNN的补漏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#one-hot%E5%90%91%E9%87%8F"><span class="nav-number">1.5.</span> <span class="nav-text">one-hot向量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96"><span class="nav-number">1.6.</span> <span class="nav-text">特征提取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">1.7.</span> <span class="nav-text">基础概念</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E5%91%A8"><span class="nav-number">2.</span> <span class="nav-text">第二周</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5-1"><span class="nav-number">2.1.</span> <span class="nav-text">基础概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9"><span class="nav-number">2.2.</span> <span class="nav-text">模型选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Scikit-Learn%E5%B7%A5%E5%85%B7%E5%AD%A6%E4%B9%A0"><span class="nav-number">2.3.</span> <span class="nav-text">Scikit Learn工具学习</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E5%91%A8"><span class="nav-number">3.</span> <span class="nav-text">第三周</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">线性模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E5%A4%9A%E7%BB%B4%EF%BC%8C%E8%BE%93%E5%87%BA%E4%B8%80%E7%BB%B4"><span class="nav-number">3.1.1.</span> <span class="nav-text">输入多维，输出一维</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E5%A4%9A%E7%BB%B4%EF%BC%8C%E8%BE%93%E5%85%A5%E5%A4%9A%E7%BB%B4"><span class="nav-number">3.1.2.</span> <span class="nav-text">输入多维，输入多维</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92"><span class="nav-number">3.1.3.</span> <span class="nav-text">逻辑回归</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%88%A4%E5%88%AB%E5%88%86%E6%9E%90%E2%80%94%E2%80%94LDA"><span class="nav-number">3.1.4.</span> <span class="nav-text">线性判别分析——LDA</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -465,7 +507,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-count">26</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
