@@ -155,10 +155,183 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/29/hws/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Haida.png">
+      <meta itemprop="name" content="Anza">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anza | 学习记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/01/29/hws/" class="post-title-link" itemprop="url">hws × dasctf 复盘</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-29 20:01:57" itemprop="dateCreated datePublished" datetime="2022-01-29T20:01:57+08:00">2022-01-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-30 20:37:20" itemprop="dateModified" datetime="2022-01-30T20:37:20+08:00">2022-01-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/" itemprop="url" rel="index"><span itemprop="name">ctf</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/wp/" itemprop="url" rel="index"><span itemprop="name">wp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>复盘一下 hws。全是堆题，还好当时跑去打 HGAME 了，跟着🐟师傅的 wp 过一遍。</p>
+<h2 id="送分题"><a href="#送分题" class="headerlink" title="送分题"></a>送分题</h2><p>先复习几个 gdb 调试命令，一直记不住：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看某变量的地址 -&gt; p &amp;变量名 </span></span><br><span class="line"><span class="comment"># 示例如下</span></span><br><span class="line">p &amp;global_max_fast</span><br><span class="line">p &amp;__malloc_hook</span><br><span class="line">p &amp;environ</span><br><span class="line">p &amp;_IO_str_jumps</span><br><span class="line">p &amp;_IO_list_all</span><br><span class="line"></span><br><span class="line">p _IO_list_all      查看_IO_list_all 地址</span><br><span class="line">p _IO_list_all-&gt;file._chain     查看_IO_list_all的下一个file结构体地址</span><br><span class="line">p _IO_list_all-&gt;file._chain-&gt;_chain      同上</span><br><span class="line">p *(struct _IO_FILE_plus *)0x558df5c9c060      0x558df5c9c060为fake io file地址，查看 _IO_FILE_plus结构体</span><br><span class="line">p *(struct _IO_jump_t *)0x55b5cefb2140    查看_IO_jump_t 结构体</span><br><span class="line">p _IO_str_jumps    查看_IO_str_jumps</span><br><span class="line">p _IO_file_jumps   查看_IO_file_jumps   </span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/01/29/hws/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/24/hgame2022/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Haida.png">
+      <meta itemprop="name" content="Anza">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anza | 学习记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/01/24/hgame2022/" class="post-title-link" itemprop="url">hgame2022</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-24 15:19:07" itemprop="dateCreated datePublished" datetime="2022-01-24T15:19:07+08:00">2022-01-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-23 11:11:32" itemprop="dateModified" datetime="2022-02-23T11:11:32+08:00">2022-02-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/" itemprop="url" rel="index"><span itemprop="name">ctf</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/wp/" itemprop="url" rel="index"><span itemprop="name">wp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>闲着时就去打了下杭电的 HGAME2022，以为第一周的题目都会蛮简单的，没想到每道题都花了不少功夫，出题人甚至还只是大二学生，顿时感觉到参差了。</p>
+<img src="https://p.qlogo.cn/hy_personal/3e28f14aa0516842c5e5f075cf99bf8153e5771fe221aa38447e9e590e955958/0.png"  />
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/01/24/hgame2022/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/20/math/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
+      <meta itemprop="image" content="/images/Haida.png">
       <meta itemprop="name" content="Anza">
       <meta itemprop="description" content="">
     </span>
@@ -250,7 +423,7 @@
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/18/maths-model/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
+      <meta itemprop="image" content="/images/Haida.png">
       <meta itemprop="name" content="Anza">
       <meta itemprop="description" content="">
     </span>
@@ -331,7 +504,7 @@
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/14/AFL-use/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
+      <meta itemprop="image" content="/images/Haida.png">
       <meta itemprop="name" content="Anza">
       <meta itemprop="description" content="">
     </span>
@@ -415,7 +588,7 @@
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/10/AFL-read3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
+      <meta itemprop="image" content="/images/Haida.png">
       <meta itemprop="name" content="Anza">
       <meta itemprop="description" content="">
     </span>
@@ -494,7 +667,7 @@
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/08/cazy/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
+      <meta itemprop="image" content="/images/Haida.png">
       <meta itemprop="name" content="Anza">
       <meta itemprop="description" content="">
     </span>
@@ -522,7 +695,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-24 15:21:06" itemprop="dateModified" datetime="2022-01-24T15:21:06+08:00">2022-01-24</time>
+                <time title="修改时间：2022-03-30 14:30:48" itemprop="dateModified" datetime="2022-03-30T14:30:48+08:00">2022-03-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -581,7 +754,7 @@
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/07/heap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
+      <meta itemprop="image" content="/images/Haida.png">
       <meta itemprop="name" content="Anza">
       <meta itemprop="description" content="">
     </span>
@@ -669,7 +842,7 @@
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/07/AFL-read2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
+      <meta itemprop="image" content="/images/Haida.png">
       <meta itemprop="name" content="Anza">
       <meta itemprop="description" content="">
     </span>
@@ -748,7 +921,7 @@
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/07/phrases1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
+      <meta itemprop="image" content="/images/Haida.png">
       <meta itemprop="name" content="Anza">
       <meta itemprop="description" content="">
     </span>
@@ -837,197 +1010,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/07/sentences/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
-      <meta itemprop="name" content="Anza">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Anza | 学习记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/07/sentences/" class="post-title-link" itemprop="url">长短句</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-01-07 09:12:47" itemprop="dateCreated datePublished" datetime="2022-01-07T09:12:47+08:00">2022-01-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-25 17:48:59" itemprop="dateModified" datetime="2022-02-25T17:48:59+08:00">2022-02-25</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%80%83%E7%A0%94/" itemprop="url" rel="index"><span itemprop="name">考研</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%80%83%E7%A0%94/%E8%8B%B1%E8%AF%AD/" itemprop="url" rel="index"><span itemprop="name">英语</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>记录优美或者比较复杂的长短句。</p>
-<ul>
-<li><p>The wedding was a very <strong>grand</strong> <em>occasion</em>.</p>
-<p>婚礼场面十分隆重</p>
-</li>
-<li><p>Most high-tech industries <em>have been using</em> the <strong>metric</strong> system for decades.</p>
-<p>大多数的高科技产业已经采用了几十年的米制</p>
-</li>
-<li><p>The commission ignores that for several decades America’s colleges and universities have <em>produced graduates</em> who don’t know the content and character of liberal education and <strong>are thus deprived of its benefits</strong>.</p>
-<p>人文与科学委员会忽略了这样的事实：几十年来，美国高等院校培养出的大量毕业生对人文教育的内容和特点并不了解，因此这些人无法从中收益</p>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/01/07/sentences/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/07/words1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://c2.im5i.com/2022/01/02/EorW6.png">
-      <meta itemprop="name" content="Anza">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Anza | 学习记录">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/07/words1/" class="post-title-link" itemprop="url">1月单词</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-01-07 09:03:25" itemprop="dateCreated datePublished" datetime="2022-01-07T09:03:25+08:00">2022-01-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-23 20:22:28" itemprop="dateModified" datetime="2022-02-23T20:22:28+08:00">2022-02-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%80%83%E7%A0%94/" itemprop="url" rel="index"><span itemprop="name">考研</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%80%83%E7%A0%94/%E8%8B%B1%E8%AF%AD/" itemprop="url" rel="index"><span itemprop="name">英语</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>记录每天背的新单词。</p>
-<ul>
-<li><p>1/7</p>
-<ul>
-<li>owe  v.  归功于，欠（债、账、情）</li>
-<li>deprive  v.  剥夺对某物的所有权，免职</li>
-<li>tumble  v.  摔跤，打滚； n.  跌倒</li>
-<li>spin (spun,spun)  v./n.  旋转</li>
-<li>gadget  n.  小器具，小装置</li>
-<li>metaphor  n.  隐喻，暗喻</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/01/07/words1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1090,7 +1072,7 @@
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Anza"
-      src="https://c2.im5i.com/2022/01/02/EorW6.png">
+      src="/images/Haida.png">
   <p class="site-author-name" itemprop="name">Anza</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -1099,7 +1081,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
