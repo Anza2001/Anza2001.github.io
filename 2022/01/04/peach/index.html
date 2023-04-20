@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32gl-A.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16gl-A.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="网上关于peach框架的资料少的可怜。最后跟着一位博主的博客学了下来，不过学的是Fuzz Web Api。就是下面的博客。感谢大佬。  Peach原理简介与实战：以Fuzz Web API为例  接下来就简单记录一下今天下午对peach框架的粗浅尝试。 以下是工作文件夹和成果展示">
+<meta property="og:type" content="article">
+<meta property="og:title" content="peach学习及在web领域的应用">
+<meta property="og:url" content="http://example.com/2022/01/04/peach/index.html">
+<meta property="og:site_name" content="Anza | 学习记录">
+<meta property="og:description" content="网上关于peach框架的资料少的可怜。最后跟着一位博主的博客学了下来，不过学的是Fuzz Web Api。就是下面的博客。感谢大佬。  Peach原理简介与实战：以Fuzz Web API为例  接下来就简单记录一下今天下午对peach框架的粗浅尝试。 以下是工作文件夹和成果展示">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/36888/13/19529/96612/63f30d08Feb24adf9/a6aea8c9943dd22f.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/147533/9/35684/456840/63f30d2dF161352fc/a08d0db0bc4af605.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/98767/29/33250/297091/63f30d0bFb8fb82ca/6bd323358754cd20.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/139096/24/33662/90948/63f30d09Fb4c62a89/64c19668c4ee0bbd.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/146986/39/33790/197181/63f30d09F92d9b534/300bedb499608595.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/135662/23/29143/105109/63f30e75F10af121f/30fb22f355f79ada.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/143628/18/31276/331864/63f30ed8Fa32d3a88/5a67d3a1bd2bb451.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/49739/34/18962/171555/63f30e66F3b53cfe1/0ae126b36d5a29fe.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/194622/32/32714/457318/63f30ed7Ff9c6f305/7222cd64af03823e.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/191931/20/33255/92329/63f30e6fF8ef6d164/475421ea9573964f.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/123158/8/35793/67146/63f3107cF0548a812/8c4610fcb5dc6a2d.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/138332/21/29339/258119/63f31074Fab9ff6f9/8a782e9e75153d37.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/111442/11/31651/192774/63f31074F6b9a25a5/0c9623296ed13b49.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/32032/12/21330/196376/63f3108fFd6f8f835/a1fa56905ef5b86b.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/106804/13/25217/180378/63f31074F30ae7716/f2c31195589d6f73.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/138287/24/33317/131526/63f3116bF492f304c/deda6ef59252705d.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/198394/7/30757/129740/63f31146F6a2daa04/160c56927739fa38.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/110505/27/35272/79810/63f31147F55d19a83/91cc7631539cb7fa.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/185169/19/29635/140331/63f31159Ff819f253/47d04247431b6e8f.png">
+<meta property="article:published_time" content="2022-01-04T10:02:26.000Z">
+<meta property="article:modified_time" content="2023-02-20T06:22:46.433Z">
+<meta property="article:author" content="Anza">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/36888/13/19529/96612/63f30d08Feb24adf9/a6aea8c9943dd22f.png">
+
+<link rel="canonical" href="http://example.com/2022/01/04/peach/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>peach学习及在web领域的应用 | Anza | 学习记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Anza | 学习记录" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Anza | 学习记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/04/peach/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Haida.png">
+      <meta itemprop="name" content="Anza">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anza | 学习记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          peach学习及在web领域的应用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-04 18:02:26" itemprop="dateCreated datePublished" datetime="2022-01-04T18:02:26+08:00">2022-01-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-02-20 14:22:46" itemprop="dateModified" datetime="2023-02-20T14:22:46+08:00">2023-02-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/fuzz/" itemprop="url" rel="index"><span itemprop="name">fuzz</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>网上关于peach框架的资料少的可怜。最后跟着一位博主的博客学了下来，不过学的是Fuzz Web Api。就是下面的博客。感谢大佬。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_27446553/article/details/103278465?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-4.no_search_link&spm=1001.2101.3001.4242.3&utm_relevant_index=7">Peach原理简介与实战：以Fuzz Web API为例</a></p>
+</blockquote>
+<p>接下来就简单记录一下今天下午对peach框架的粗浅尝试。</p>
+<h3 id="以下是工作文件夹和成果展示"><a href="#以下是工作文件夹和成果展示" class="headerlink" title="以下是工作文件夹和成果展示"></a>以下是工作文件夹和成果展示</h3><span id="more"></span>
+
+<p>用于构建peach数据、状态、配置模型的工作文件夹</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/36888/13/19529/96612/63f30d08Feb24adf9/a6aea8c9943dd22f.png" style="zoom:80%;" />
+
+<p>终端上跑起来的效果</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/147533/9/35684/456840/63f30d2dF161352fc/a08d0db0bc4af605.png" style="zoom:80%;" />
+
+<p>BurpSuite上收到的相应报文</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/98767/29/33250/297091/63f30d0bFb8fb82ca/6bd323358754cd20.png" style="zoom: 80%;" />
+
+<h2 id="以BUUCTF上的-HFCTF2020-EasyLogin作测试目标平台"><a href="#以BUUCTF上的-HFCTF2020-EasyLogin作测试目标平台" class="headerlink" title="以BUUCTF上的[HFCTF2020]EasyLogin作测试目标平台"></a>以BUUCTF上的[HFCTF2020]EasyLogin作测试目标平台</h2><img src="https://kjimg10.360buyimg.com/ott/jfs/t1/139096/24/33662/90948/63f30d09Fb4c62a89/64c19668c4ee0bbd.png"  />
+
+<h3 id="1-获取请求报文的模板作为login-bin"><a href="#1-获取请求报文的模板作为login-bin" class="headerlink" title="1. 获取请求报文的模板作为login.bin"></a>1. 获取请求报文的模板作为login.bin</h3><p>我们输入用户名和密码后，点击LOGIN按钮，此时客户端就会发送一个请求，在BurpSuite上我们便能拿到该请求模板，如下图。</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/146986/39/33790/197181/63f30d09F92d9b534/300bedb499608595.png"  />
+
+<p>我们新建一个文件夹，将该模板复制到 login.bin 里，如下图。（可以随意命名，保存为.bin文件即可</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/135662/23/29143/105109/63f30e75F10af121f/30fb22f355f79ada.png" style="zoom: 80%;" />
+
+<h3 id="2-根据-bin模板构造数据模型1-my-data-xml"><a href="#2-根据-bin模板构造数据模型1-my-data-xml" class="headerlink" title="2. 根据.bin模板构造数据模型1-my_data.xml"></a>2. 根据.bin模板构造数据模型1-my_data.xml</h3><p>创建一个1-my_data.xml，存放如下代码。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;utf-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Peach</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://peachfuzzer.com/2012/Peach&quot;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://peachfuzzer.com/2012/Peach ../peach.xsd&quot;</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">	<span class="tag">&lt;<span class="name">DataModel</span> <span class="attr">name</span>=<span class="string">&quot;my_data_model&quot;</span>&gt;</span></span><br><span class="line">		</span><br><span class="line">	<span class="tag">&lt;/<span class="name">DataModel</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;/<span class="name">Peach</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中DataModel元素下放的便是各行的<strong>字符串或符号</strong>，需要区分开来。以前几行为例。token代表是否为特殊符号，像 <strong>‘:’ ‘&amp;’<strong>之类的都要进行区分。mutable意为可变的，也就是该数据模块需要<span style="color:red;font-weight:600">变异</span>的地方。笔者是对</strong>admin</strong>和<strong>password</strong>的值设置可变异。</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/143628/18/31276/331864/63f30ed8Fa32d3a88/5a67d3a1bd2bb451.png" style="zoom:80%;" />
+
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/49739/34/18962/171555/63f30e66F3b53cfe1/0ae126b36d5a29fe.png" style="zoom:80%;" />
+
+<p>构造DataModel是一个比较费力的过程，还好Peach安装包里提供了校验DataModel是否与我们的.bin对应的工具Peach Validator，才让长时间的努力有了效率。</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/194622/32/32714/457318/63f30ed7Ff9c6f305/7222cd64af03823e.png" style="zoom: 67%;" />
+
+<h3 id="3-构造配置模型2-my-xml-config"><a href="#3-构造配置模型2-my-xml-config" class="headerlink" title="3. 构造配置模型2-my_xml.config"></a>3. 构造配置模型2-my_xml.config</h3><p>需根据目标端口进行配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;utf-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">PitDefines</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">All</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">IPv4</span> <span class="attr">key</span>=<span class="string">&quot;TargetAddress&quot;</span></span></span><br><span class="line"><span class="tag">			  <span class="attr">value</span>=<span class="string">&quot;848e59df-143b-4177-bf5b-c6b70a18e040.node4.buuoj.cn&quot;</span> /&gt;</span></span><br><span class="line">			  </span><br><span class="line">		<span class="tag">&lt;<span class="name">Range</span> <span class="attr">key</span>=<span class="string">&quot;TargetPort&quot;</span></span></span><br><span class="line"><span class="tag">			   <span class="attr">value</span>=<span class="string">&quot;81&quot;</span></span></span><br><span class="line"><span class="tag">			   <span class="attr">min</span>=<span class="string">&quot;0&quot;</span></span></span><br><span class="line"><span class="tag">			   <span class="attr">max</span>=<span class="string">&quot;65535&quot;</span> /&gt;</span></span><br><span class="line">			   </span><br><span class="line">		<span class="tag">&lt;<span class="name">Range</span> <span class="attr">key</span>=<span class="string">&quot;Timeout&quot;</span></span></span><br><span class="line"><span class="tag">			   <span class="attr">value</span>=<span class="string">&quot;5000&quot;</span></span></span><br><span class="line"><span class="tag">			   <span class="attr">min</span>=<span class="string">&quot;0&quot;</span></span></span><br><span class="line"><span class="tag">			   <span class="attr">max</span>=<span class="string">&quot;999999&quot;</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">All</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">PitDefines</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Peach</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-构建状态模型3-my-state-xml"><a href="#4-构建状态模型3-my-state-xml" class="headerlink" title="4. 构建状态模型3-my_state.xml"></a>4. 构建状态模型3-my_state.xml</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;utf-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Peach</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://peachfuzzer.com/2012/Peach&quot;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://peachfuzzer.com/2012/Peach ../peach.xsd&quot;</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 导入数据模型 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Include</span> <span class="attr">ns</span>=<span class="string">&quot;MyData&quot;</span> <span class="attr">src</span>=<span class="string">&quot;D:\\Fuzz——peach\\MyPeachPit\\1-my_data.xml&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">StateModel</span> <span class="attr">name</span>=<span class="string">&quot;My_State&quot;</span> <span class="attr">initialState</span>=<span class="string">&quot;state_one&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">State</span> <span class="attr">name</span>=<span class="string">&quot;state_one&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Action</span> <span class="attr">type</span>=<span class="string">&quot;output&quot;</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- 引用名为my_data_model的ModelData --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">DataModel</span> <span class="attr">ref</span>=<span class="string">&quot;MyData:my_data_model&quot;</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">Data</span> <span class="attr">fileName</span>=<span class="string">&quot;D:\\Fuzz——peach\\MyPeachPit\\login.bin&quot;</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">Action</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Action</span> <span class="attr">type</span>=<span class="string">&quot;input&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">DataModel</span> <span class="attr">name</span>=<span class="string">&quot;NULL&quot;</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">Blob</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">DataModel</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">Action</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">State</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">StateModel</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">Peach</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-构建综合模型4-my-integrate-xml"><a href="#5-构建综合模型4-my-integrate-xml" class="headerlink" title="5. 构建综合模型4-my_integrate.xml"></a>5. 构建综合模型4-my_integrate.xml</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;utf-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Peach</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://peachfuzzer.com/2012/Peach&quot;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://peachfuzzer.com/2012/Peach ../peach.xsd&quot;</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment">&lt;!-- 引入状态模型 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Include</span> <span class="attr">ns</span>=<span class="string">&quot;MyState&quot;</span> <span class="attr">src</span>=<span class="string">&quot;D:\\Fuzz——peach\\MyPeachPit\\3-my_state.xml&quot;</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">Agent</span> <span class="attr">name</span>=<span class="string">&quot;LocalAgent&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Agent</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Test</span> <span class="attr">name</span>=<span class="string">&quot;Default&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Agent</span> <span class="attr">ref</span>=<span class="string">&quot;LocalAgent&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">StateModel</span> <span class="attr">ref</span>=<span class="string">&quot;MyState:My_State&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">Publisher</span> <span class="attr">class</span>=<span class="string">&quot;Tcp&quot;</span> <span class="attr">name</span>=<span class="string">&quot;tcp&quot;</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 为BurpSuite代理ip --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Param</span> <span class="attr">name</span>=<span class="string">&quot;Host&quot;</span> <span class="attr">value</span>=<span class="string">&quot;127.0.0.1&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Param</span> <span class="attr">name</span>=<span class="string">&quot;Port&quot;</span> <span class="attr">value</span>=<span class="string">&quot;8080&quot;</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Param</span> <span class="attr">name</span>=<span class="string">&quot;Timeout&quot;</span> <span class="attr">value</span>=<span class="string">&quot;5000&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Publisher</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">Logger</span> <span class="attr">class</span>=<span class="string">&quot;File&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Param</span> <span class="attr">name</span>=<span class="string">&quot;Path&quot;</span> <span class="attr">value</span>=<span class="string">&quot;##LogPath##&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">Logger</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Test</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Peach</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>同时修改BurpSuite上的代理信息，ip和端口不用改，只需将其重定位至目标靶机，如下图。</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/191931/20/33255/92329/63f30e6fF8ef6d164/475421ea9573964f.png" style="zoom: 67%;" />
+
+<h3 id="6-最后检验测试套是否正确"><a href="#6-最后检验测试套是否正确" class="headerlink" title="6. 最后检验测试套是否正确"></a>6. 最后检验测试套是否正确</h3><p>在其目录下输入以下命令<code>peach 4-my_integrate.xml -1</code>，出现下图就说明配置成功了。</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/123158/8/35793/67146/63f3107cF0548a812/8c4610fcb5dc6a2d.png" style="zoom:80%;" />
+
+<h3 id="7-开始fuzz"><a href="#7-开始fuzz" class="headerlink" title="7. 开始fuzz"></a>7. 开始fuzz</h3><p>输入命令<code>peach 4-my_integrate.xml -range 1,150000</code></p>
+<p>意为发送15w个变异报文，15w为官方推荐数量。</p>
+<p>注：记得关掉 intercept 截听器，否则得一个个按forward发送请求报文，最后在Http History界面筛选异常报文即可。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>作为一名菜鸡二进制手，学到了挺多的web知识，也挺好。在实践中稍微熟悉了peach框架的构建流程。</p>
+<p>不过也遇到了很多问题，就是”Content-Length”的值的问题，因为长度如果一直是固定的话发送的请求头该怎么进行长度变异？不过在检测报文时还是观察到某些请求报文的”Content-Length”是会改变的，不过是极少数，如下。</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/138332/21/29339/258119/63f31074Fab9ff6f9/8a782e9e75153d37.png" style="zoom:80%;" />
+
+<p>大部分是缺参数的，如下。</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/111442/11/31651/192774/63f31074F6b9a25a5/0c9623296ed13b49.png" style="zoom: 67%;" />
+
+<p>打算明天改进一下DataModel这样子。</p>
+<hr>
+<p>隔天实践了一下，发现将bin中和datamodel中的”Content-Length”改大后，就例如我设置了1000，那么我的请求体的长度范围便是[0,1000]，范围设置越大越好。如我所料，变异请求体的长度变化了很多，也印证了我前几天的思考。同时我还修改了参数authorization的值为可变。虽然仍然跑不出异常结果就对了。（当然很有可能是这道题的考点就不在这里）。以下是今天跑出的各类变异请求体。</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/32032/12/21330/196376/63f3108fFd6f8f835/a1fa56905ef5b86b.png" style="zoom:80%;" />
+
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/106804/13/25217/180378/63f31074F30ae7716/f2c31195589d6f73.png" style="zoom:80%;" />
+
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/138287/24/33317/131526/63f3116bF492f304c/deda6ef59252705d.png"  />
+
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/198394/7/30757/129740/63f31146F6a2daa04/160c56927739fa38.png"  />
+
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/110505/27/35272/79810/63f31147F55d19a83/91cc7631539cb7fa.png" style="zoom:80%;" />
+
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/185169/19/29635/140331/63f31159Ff819f253/47d04247431b6e8f.png"  />
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/03/burpsuite/" rel="prev" title="burpsuite工具学习">
+      <i class="fa fa-chevron-left"></i> burpsuite工具学习
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/08/cazy/" rel="next" title="长安战"疫"">
+      长安战"疫" <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A5%E4%B8%8B%E6%98%AF%E5%B7%A5%E4%BD%9C%E6%96%87%E4%BB%B6%E5%A4%B9%E5%92%8C%E6%88%90%E6%9E%9C%E5%B1%95%E7%A4%BA"><span class="nav-number">1.</span> <span class="nav-text">以下是工作文件夹和成果展示</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A5BUUCTF%E4%B8%8A%E7%9A%84-HFCTF2020-EasyLogin%E4%BD%9C%E6%B5%8B%E8%AF%95%E7%9B%AE%E6%A0%87%E5%B9%B3%E5%8F%B0"><span class="nav-number"></span> <span class="nav-text">以BUUCTF上的[HFCTF2020]EasyLogin作测试目标平台</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%8E%B7%E5%8F%96%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87%E7%9A%84%E6%A8%A1%E6%9D%BF%E4%BD%9C%E4%B8%BAlogin-bin"><span class="nav-number">1.</span> <span class="nav-text">1. 获取请求报文的模板作为login.bin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%A0%B9%E6%8D%AE-bin%E6%A8%A1%E6%9D%BF%E6%9E%84%E9%80%A0%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B1-my-data-xml"><span class="nav-number">2.</span> <span class="nav-text">2. 根据.bin模板构造数据模型1-my_data.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%9E%84%E9%80%A0%E9%85%8D%E7%BD%AE%E6%A8%A1%E5%9E%8B2-my-xml-config"><span class="nav-number">3.</span> <span class="nav-text">3. 构造配置模型2-my_xml.config</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%9E%84%E5%BB%BA%E7%8A%B6%E6%80%81%E6%A8%A1%E5%9E%8B3-my-state-xml"><span class="nav-number">4.</span> <span class="nav-text">4. 构建状态模型3-my_state.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%9E%84%E5%BB%BA%E7%BB%BC%E5%90%88%E6%A8%A1%E5%9E%8B4-my-integrate-xml"><span class="nav-number">5.</span> <span class="nav-text">5. 构建综合模型4-my_integrate.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%9C%80%E5%90%8E%E6%A3%80%E9%AA%8C%E6%B5%8B%E8%AF%95%E5%A5%97%E6%98%AF%E5%90%A6%E6%AD%A3%E7%A1%AE"><span class="nav-number">6.</span> <span class="nav-text">6. 最后检验测试套是否正确</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E5%BC%80%E5%A7%8Bfuzz"><span class="nav-number">7.</span> <span class="nav-text">7. 开始fuzz</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number"></span> <span class="nav-text">总结</span></a></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anza"
+      src="/images/Haida.png">
+  <p class="site-author-name" itemprop="name">Anza</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://verf1sh.github.io/" title="https:&#x2F;&#x2F;verf1sh.github.io&#x2F;" rel="noopener" target="_blank">VerF1sh</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://4xwi11.github.io/" title="https:&#x2F;&#x2F;4xwi11.github.io&#x2F;" rel="noopener" target="_blank">4XWi11</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="author" itemprop="copyrightHolder">Anza</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

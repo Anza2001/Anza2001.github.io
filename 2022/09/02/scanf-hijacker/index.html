@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32gl-A.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16gl-A.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一切都源于某个中午的突发奇想~">
+<meta property="og:type" content="article">
+<meta property="og:title" content="scanf_attacker？">
+<meta property="og:url" content="http://example.com/2022/09/02/scanf-hijacker/index.html">
+<meta property="og:site_name" content="Anza | 学习记录">
+<meta property="og:description" content="一切都源于某个中午的突发奇想~">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/195106/24/27337/22482/631163bdE235b1360/0af342924109996b.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/128154/12/29279/36057/63116848Ea2f34b05/b991a211c9e5b641.jpg">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/47026/25/21037/41527/63116b98Eb9f9e80a/f3f24576b5844d4a.jpg">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/192749/27/27723/89623/63117202E1841821f/2f6f248266f3fff7.png">
+<meta property="og:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/215319/40/20778/119453/631173b3Ea84ff058/050099a11809f7d9.png">
+<meta property="article:published_time" content="2022-09-02T01:55:51.000Z">
+<meta property="article:modified_time" content="2023-01-18T11:51:32.893Z">
+<meta property="article:author" content="Anza">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kjimg10.360buyimg.com/ott/jfs/t1/195106/24/27337/22482/631163bdE235b1360/0af342924109996b.png">
+
+<link rel="canonical" href="http://example.com/2022/09/02/scanf-hijacker/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>scanf_attacker？ | Anza | 学习记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Anza | 学习记录" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Anza | 学习记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/09/02/scanf-hijacker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Haida.png">
+      <meta itemprop="name" content="Anza">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anza | 学习记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          scanf_attacker？
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-09-02 09:55:51" itemprop="dateCreated datePublished" datetime="2022-09-02T09:55:51+08:00">2022-09-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-18 19:51:32" itemprop="dateModified" datetime="2023-01-18T19:51:32+08:00">2023-01-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/pwn/" itemprop="url" rel="index"><span itemprop="name">pwn</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>一切都源于某个中午的突发奇想~</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/195106/24/27337/22482/631163bdE235b1360/0af342924109996b.png" style="zoom:80%;" />
+
+<span id="more"></span>
+
+<h2 id="想法"><a href="#想法" class="headerlink" title="想法"></a>想法</h2><p>众所周知，在较低的<code>libc</code>版本（2.34之前）下进行<code>orw</code>利用一般是把<code>__free_hook</code>劫持为<code>setcontext</code>进行栈迁移（现在还需要跳板<code>gadget</code>完成<code>rdx</code>到<code>rdi</code>的转变），堆的各项布局对于我这个想寄就寄的菜鸟来说真是心力憔悴。</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/128154/12/29279/36057/63116848Ea2f34b05/b991a211c9e5b641.jpg" style="zoom: 33%;" />
+
+<p>转念一想<code>free(buf)</code>中的<code>buf</code>是人为可控的，<code>free</code>也可以由<code>__free_hook</code>被劫持为某个函数。刚好当时国赛出题出的就是有关格式化字符串<code>printf</code>和<code>scanf</code>的漏洞利用，就有了这样的想法——<code>free(buf)</code>===&gt;<code>scanf(buf)</code>，其中<code>buf</code>堆块中存放着<code>%n$s</code>来对准<code>rbp</code>链在函数返回地址处直接构造<code>orw</code>。</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/47026/25/21037/41527/63116b98Eb9f9e80a/f3f24576b5844d4a.jpg" style="zoom: 25%;" />
+
+<h2 id="scanf格式化字符串漏洞"><a href="#scanf格式化字符串漏洞" class="headerlink" title="scanf格式化字符串漏洞"></a>scanf格式化字符串漏洞</h2><p>利用<code>scanf(%n$s)</code>可以对偏移为<code>n</code>的栈上<strong>指针</strong>指向处进行<strong>任意长度</strong>的输入。常见利用手法有：</p>
+<ol>
+<li>栈上若残留<code>IO</code>指针可进行<code>IO_ATTACK</code>泄露<code>libc</code></li>
+<li>利用<code>rbp</code>链构造<code>rop</code>，直接避开了<code>rbp</code>链前的<code>canary</code></li>
+</ol>
+<h2 id="试验"><a href="#试验" class="headerlink" title="试验"></a>试验</h2><p>于是兴致勃勃地跑去用<a target="_blank" rel="noopener" href="https://anza2001.github.io/2022/08/14/off-by-one/">上次刚复盘过的题目</a>进行试验：</p>
+<p>下图为已劫持<code>__free_hook</code>为<code>scanf</code>，正在尝试执行<code>scanf(&#39;%8$s&#39;)</code>操作（8为<code>rbp</code>链的偏移）：</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/192749/27/27723/89623/63117202E1841821f/2f6f248266f3fff7.png" style="zoom:80%;" />
+
+<p>送些垃圾数据过去，看一下栈的变化：</p>
+<img src="https://kjimg10.360buyimg.com/ott/jfs/t1/215319/40/20778/119453/631173b3Ea84ff058/050099a11809f7d9.png" style="zoom:80%;" />
+
+<p>可以看到我们成功利用<code>rbp</code>链将<code>main</code>函数栈的返回地址给覆盖为了<code>anzaanza</code>，加上<code>scanf</code>也不会被<code>\x00</code>截断，所以直接构造<code>orw</code>并非难事。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ol>
+<li><p>省去了对堆块的布局操作以及寻找<code>rdx</code>和<code>rdi</code>转变的<code>gadget</code>，简化为只需要爆破出固定偏移即可。</p>
+</li>
+<li><p>上次复盘时感觉<code>setcontext</code>和<code>orw</code>链需要在一个较大的堆块中进行布局，如果所给堆块较小的话，大概会提高利用的复杂程度（第一次利用<code>setcontext</code>解题，经验不足，可能是拙见）。而<code>scanf</code>可输入不限长，对参数堆块<code>buf</code>的大小也不做限制。</p>
+</li>
+<li><p>如果题目允许，则可不断申请、释放？相当于无限次格式化字符串漏洞（不论劫持为<code>scanf</code>还是<code>printf</code>），可以在栈上构造想要的地址，然后对其指向处进行修改等操作？</p>
+</li>
+</ol>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ol>
+<li>试验过程中我们知道，在<code>delete</code>功能函数中利用<code>scanf</code>格式化漏洞利用只能修改到其<strong>父函数</strong>即<code>main</code>函数的返回地址，而许多题目都是直接<code>exit</code>退出了，不给<code>main</code>函数返回的机会。</li>
+<li>会被<code>\x0a</code>截断，对<code>rop</code>链有要求。</li>
+<li>大概更适用于<code>orw</code>，毕竟不开沙箱的话直接构造<code>system(&#39;/bin/sh&#39;)</code>就好。</li>
+</ol>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p><code>scanf(buf)</code>和<code>system(buf)</code>都是控制函数和其第一个参数，而后者被<code>sandbox</code>之后，前者还有用武之地（除非<code>orw</code>白名单）。不知能否配合<code>io_file</code>之类的利用手法，以及搭配起来是否比原解法更方便。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/14/off-by-one/" rel="prev" title="off-by-one">
+      <i class="fa fa-chevron-left"></i> off-by-one
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/01/05/hgame2023/" rel="next" title="hgame2023">
+      hgame2023 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%83%B3%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">想法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#scanf%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E"><span class="nav-number">2.</span> <span class="nav-text">scanf格式化字符串漏洞</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%95%E9%AA%8C"><span class="nav-number">3.</span> <span class="nav-text">试验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">4.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">4.2.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">4.3.</span> <span class="nav-text">其他</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anza"
+      src="/images/Haida.png">
+  <p class="site-author-name" itemprop="name">Anza</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://verf1sh.github.io/" title="https:&#x2F;&#x2F;verf1sh.github.io&#x2F;" rel="noopener" target="_blank">VerF1sh</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://4xwi11.github.io/" title="https:&#x2F;&#x2F;4xwi11.github.io&#x2F;" rel="noopener" target="_blank">4XWi11</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="author" itemprop="copyrightHolder">Anza</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
