@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2023-02-06T11:17:38.752Z</updated>
+  <updated>2023-04-07T07:12:33.976Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,48 +15,6 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="http://example.com/2023/04/20/hello-world/"/>
-    <id>http://example.com/2023/04/20/hello-world/</id>
-    <published>2023-04-20T13:15:33.015Z</published>
-    <updated>2023-02-06T11:17:38.752Z</updated>
-    
-    <content type="html"><![CDATA[<p>新年初终于搭成了属于自己的博客，就简单记录一下2022年的学习情况吧。</p><h2 id="搭建教程"><a href="#搭建教程" class="headerlink" title="搭建教程"></a>搭建教程</h2><h3 id="B站视频"><a href="#B站视频" class="headerlink" title="B站视频"></a>B站视频</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">【2021最新版】保姆级Hexo+github搭建个人博客 up主：视频搬运崽啊</span><br><span class="line">https://www.bilibili.com/video/BV1mU4y1j72n</span><br><span class="line">[馨客栈分享]使用Hexo博客搭建的个人博客，使用Next主题来进行优化改造 up主：Mackxin</span><br><span class="line">https://www.bilibili.com/video/BV16W411t7mq</span><br></pre></td></tr></table></figure><p>感谢以上以及众多帮忙纠错的博客大佬们 (●ˇ∀ˇ●)</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;新年初终于搭成了属于自己的博客，就简单记录一下2022年的学习情况吧。&lt;/p&gt;
-&lt;h2 id=&quot;搭建教程&quot;&gt;&lt;a href=&quot;#搭建教程&quot; class=&quot;headerlink&quot; title=&quot;搭建教程&quot;&gt;&lt;/a&gt;搭建教程&lt;/h2&gt;&lt;h3 id=&quot;B站视频&quot;&gt;&lt;a href=</summary>
-      
-    
-    
-    
-    <category term="other" scheme="http://example.com/categories/other/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>入门web</title>
-    <link href="http://example.com/2023/04/13/web-basic/"/>
-    <id>http://example.com/2023/04/13/web-basic/</id>
-    <published>2023-04-13T05:00:05.000Z</published>
-    <updated>2023-04-15T08:26:01.736Z</updated>
-    
-    <content type="html"><![CDATA[<p>学点 WEB。</p><span id="more"></span><h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><h3 id="域名"><a href="#域名" class="headerlink" title="域名"></a>域名</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1、什么是域名？是由一串用点分隔的名字组成的互联网上某一台计算机或计算机组的名称</span><br><span class="line">2、域名在哪里注册？万网</span><br><span class="line">3、什么是二级域名多级域名？.com:一级、顶级域名;baidu.com:二级域名</span><br><span class="line">4、域名发现对于安全测试意义？利用inurl:edu.cn搜索得到一些学校官网域名，然后利用inurl:hznu.edu.cn可以看到该学校的其他域名，也能作为突破口（旁站入侵）</span><br></pre></td></tr></table></figure><h3 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 什么是DNS？域名-&gt;ip</span><br><span class="line">2. DNS解析过程，HOSTS和DNS的关系？查找dns缓存，若无，再查找本地HOSTS配置，若无，再查找DNS服务器</span><br><span class="line">3. CDN是什么？与DNS的关系？CDN是内容分布网络，根据地区寻找最近的CDN节点，更改DNS解析服务器ip后ping相同的网站如www.youku.com，其ip会不一样</span><br><span class="line">4. 常见DNS攻击？DNS劫持，DNS投毒，使用户解析到恶意地址</span><br></pre></td></tr></table></figure><h3 id="脚本语言"><a href="#脚本语言" class="headerlink" title="脚本语言"></a>脚本语言</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 常见的脚本语言？ASP/PHP/ASPX/JAVAWEB/PL/PY/CGI/ACTION</span><br><span class="line">2. 不同脚本类型与安全漏洞的关系？严谨的脚本语言开发的网站程序安全性更高</span><br><span class="line">3. 漏洞挖掘、代码审计与脚本类型的关系？漏洞挖掘、代码审计要求看懂各种语言编写的脚本语言框架</span><br></pre></td></tr></table></figure><h3 id="后门"><a href="#后门" class="headerlink" title="后门"></a>后门</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 什么是后门？有哪些后门？用于控制网站，如webshell、rootkiller</span><br><span class="line">2. 后门在安全测试的实际意义？提供网站操作通道</span><br><span class="line">3. 关于后门需要了解哪些？（玩法，免杀：不被检测到）例如打开某个软件触发，用于维持权限</span><br></pre></td></tr></table></figure><h3 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. WEB组成？网站源码（分脚本类型、应用方向），服务器操作系统（windows、linux），中间件（搭建平台，如apache、nginx），数据库（mysql、oracle、db2 ）</span><br><span class="line">2. 为什么以WEB层面为首？因为很多厂商都有自己的网站</span><br></pre></td></tr></table></figure><h3 id="WEB相关安全漏洞"><a href="#WEB相关安全漏洞" class="headerlink" title="WEB相关安全漏洞"></a>WEB相关安全漏洞</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1. WEB源码类对应漏洞？SQL注入、上传、XSS、代码执行、变量覆盖、逻辑漏洞、反序列化等</span><br><span class="line">2. WEB中间件对应漏洞</span><br><span class="line">3. WEB数据库对应漏洞</span><br><span class="line">4. WEB系统层对应漏洞</span><br><span class="line">5. 其他第三方对应漏洞</span><br><span class="line">6. APP或PC应用结合类</span><br></pre></td></tr></table></figure><h3 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">layer——子域名查询（字典爆破）</span><br><span class="line">burp——代理抓包工具，伪造攻击</span><br></pre></td></tr></table></figure><h2 id="数据包"><a href="#数据包" class="headerlink" title="数据包"></a>数据包</h2><h3 id="HTTP报文组成"><a href="#HTTP报文组成" class="headerlink" title="HTTP报文组成"></a>HTTP报文组成</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">请求行：请求方法、URL、协议/版本</span><br><span class="line">请求头</span><br><span class="line">请求正文</span><br></pre></td></tr></table></figure><h3 id="响应HTTP报文组成"><a href="#响应HTTP报文组成" class="headerlink" title="响应HTTP报文组成"></a>响应HTTP报文组成</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">状态行</span><br><span class="line">响应头</span><br><span class="line">响应正文</span><br></pre></td></tr></table></figure><h3 id="常见请求方法"><a href="#常见请求方法" class="headerlink" title="常见请求方法"></a>常见请求方法</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">GET:请求指定的页面信息，并返回实体主体。</span><br><span class="line">POST:向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST请求可能会导致新的资源的建立和/或已有资源的修改。</span><br><span class="line">HEAD:类似于get请求，只不过返回的响应中没有具体的内容，用于获取报头</span><br><span class="line">PUT:从客户端向服务器传送的数据取代指定的文档的内容。</span><br><span class="line">DELETE:请求服务器删除指定的页面。</span><br></pre></td></tr></table></figure><h3 id="响应状态码"><a href="#响应状态码" class="headerlink" title="响应状态码"></a>响应状态码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">访问一个网页时，浏览器会向web服务器发出请求。此网页所在的服务器会返回一个包含HTTP状态码的信息头用以响应浏览器的请求。</span><br><span class="line">状态码分类：</span><br><span class="line">1XX- 信息型，服务器收到请求，需要请求者继续操作。</span><br><span class="line">2XX- 成功型，请求成功收到，理解并处理。</span><br><span class="line">3XX - 重定向，需要进一步的操作以完成请求。</span><br><span class="line">4XX - 客户端错误，请求包含语法错误或无法完成请求。</span><br><span class="line">5XX - 服务器错误，服务器在处理请求的过程中发生了错误。</span><br></pre></td></tr></table></figure><h3 id="常见状态码"><a href="#常见状态码" class="headerlink" title="常见状态码"></a>常见状态码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">200 OK - 客户端请求成功</span><br><span class="line">301 - 资源（网页等）被永久转移到其它URL</span><br><span class="line">302 - 临时跳转</span><br><span class="line">400 Bad Request - 客户端请求有语法错误，不能被服务器所理解</span><br><span class="line">401 Unauthorized - 请求未经授权，这个状态代码必须和WWW-Authenticate报头域一起使用</span><br><span class="line">404 - 请求资源不存在，可能是输入了错误的URL</span><br><span class="line">500 - 服务器内部发生了不可预期的错误</span><br><span class="line">503 Server Unavailable - 服务器当前不能处理客户端的请求，一段时间后可能恢复正常。</span><br></pre></td></tr></table></figure><h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">假设用域名扫描某个网站的文件位于目录B，用该域名IP扫描该网站的文件位于目录A，一般来说目录A是目录B的上一级，可以获取更多资料，所以扫IP更好。</span><br><span class="line">复现靶场：vulhub</span><br></pre></td></tr></table></figure>]]></content>
-    
-    
-    <summary type="html">&lt;p&gt;学点 WEB。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="web" scheme="http://example.com/categories/web/"/>
-    
-    
-  </entry>
   
   <entry>
     <title>双非一战上岸武汉大学网安专硕</title>

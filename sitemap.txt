@@ -1,9 +1,7 @@
-http://example.com/2023/04/13/web-basic/
 http://example.com/2023/04/03/hznu2whu/
 http://example.com/2022/01/04/peach/
 http://example.com/2023/02/06/arm32/
 http://example.com/2022/06/24/unicorn/
-http://example.com/2023/04/20/hello-world/
 http://example.com/2023/02/01/tricks/
 http://example.com/2022/08/14/off-by-one/
 http://example.com/2022/01/24/hgame2022/
@@ -28,7 +26,6 @@ http://example.com/categories/other/
 http://example.com/categories/fuzz/
 http://example.com/categories/ctf/
 http://example.com/categories/cve/cve-2018-5767/
-http://example.com/categories/ctf/wp/
 http://example.com/categories/pwn/
+http://example.com/categories/ctf/wp/
 http://example.com/categories/ctf/tricks/
-http://example.com/categories/web/

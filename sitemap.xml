@@ -2,15 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://example.com/2023/04/13/web-basic/</loc>
-    
-    <lastmod>2023-04-15</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/2023/04/03/hznu2whu/</loc>
     
     <lastmod>2023-04-07</lastmod>
@@ -39,15 +30,6 @@
   
   <url>
     <loc>http://example.com/2022/06/24/unicorn/</loc>
-    
-    <lastmod>2023-02-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/2023/04/20/hello-world/</loc>
     
     <lastmod>2023-02-06</lastmod>
     
@@ -193,7 +175,7 @@
 
   <url>
     <loc>http://example.com/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -201,21 +183,21 @@
   
   <url>
     <loc>http://example.com/tags/cve-tenda/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/house-of-botcake/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/libc-2-31/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -224,63 +206,56 @@
   
   <url>
     <loc>http://example.com/categories/cve/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/other/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/fuzz/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/ctf/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/cve/cve-2018-5767/</loc>
-    <lastmod>2023-04-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/ctf/wp/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/pwn/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/ctf/wp/</loc>
+    <lastmod>2023-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/ctf/tricks/</loc>
-    <lastmod>2023-04-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/web/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
