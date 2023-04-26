@@ -20,15 +20,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/2023/02/06/arm32/</loc>
-    
-    <lastmod>2023-02-18</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/2022/06/24/unicorn/</loc>
     
     <lastmod>2023-02-06</lastmod>
@@ -74,15 +65,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/2022/01/03/burpsuite/</loc>
-    
-    <lastmod>2023-01-24</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/2023/01/18/CVE-2018-5767/</loc>
     
     <lastmod>2023-01-23</lastmod>
@@ -102,15 +84,6 @@
   
   <url>
     <loc>http://example.com/2022/05/30/ciscn2022/</loc>
-    
-    <lastmod>2023-01-18</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/2022/01/08/cazy/</loc>
     
     <lastmod>2023-01-18</lastmod>
     
@@ -146,15 +119,6 @@
   </url>
   
   <url>
-    <loc>http://example.com/2022/01/02/how2markdown/</loc>
-    
-    <lastmod>2022-01-02</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/tags/index.html</loc>
     
     <lastmod>2022-01-02</lastmod>
@@ -175,7 +139,7 @@
 
   <url>
     <loc>http://example.com/</loc>
-    <lastmod>2023-04-23</lastmod>
+    <lastmod>2023-04-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -183,21 +147,21 @@
   
   <url>
     <loc>http://example.com/tags/cve-tenda/</loc>
-    <lastmod>2023-04-23</lastmod>
+    <lastmod>2023-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/house-of-botcake/</loc>
-    <lastmod>2023-04-23</lastmod>
+    <lastmod>2023-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/libc-2-31/</loc>
-    <lastmod>2023-04-23</lastmod>
+    <lastmod>2023-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -206,56 +170,56 @@
   
   <url>
     <loc>http://example.com/categories/cve/</loc>
-    <lastmod>2023-04-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/other/</loc>
-    <lastmod>2023-04-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/fuzz/</loc>
-    <lastmod>2023-04-23</lastmod>
+    <lastmod>2023-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/ctf/</loc>
-    <lastmod>2023-04-23</lastmod>
+    <lastmod>2023-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/cve/cve-2018-5767/</loc>
-    <lastmod>2023-04-23</lastmod>
+    <lastmod>2023-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/other/</loc>
+    <lastmod>2023-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/pwn/</loc>
-    <lastmod>2023-04-23</lastmod>
+    <lastmod>2023-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/ctf/wp/</loc>
-    <lastmod>2023-04-23</lastmod>
+    <lastmod>2023-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/fuzz/</loc>
+    <lastmod>2023-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/ctf/tricks/</loc>
-    <lastmod>2023-04-23</lastmod>
+    <lastmod>2023-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
