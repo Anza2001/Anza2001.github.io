@@ -20,7 +20,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/2023/05/18/xhlj-iot/</loc>
+    <loc>http://example.com/unfinished/xhlj-iot.html</loc>
     
     <lastmod>2023-05-27</lastmod>
     
@@ -29,7 +29,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/2023/05/21/front-end/</loc>
+    <loc>http://example.com/unfinished/front-end.html</loc>
     
     <lastmod>2023-05-23</lastmod>
     
@@ -180,14 +180,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/libc-2-31/</loc>
+    <loc>http://example.com/tags/house-of-botcake/</loc>
     <lastmod>2023-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://example.com/tags/house-of-botcake/</loc>
+    <loc>http://example.com/tags/libc-2-31/</loc>
     <lastmod>2023-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -217,7 +217,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/pwn/</loc>
+    <loc>http://example.com/categories/other/</loc>
     <lastmod>2023-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -231,14 +231,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/fuzz/</loc>
+    <loc>http://example.com/categories/pwn/</loc>
     <lastmod>2023-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://example.com/categories/other/</loc>
+    <loc>http://example.com/categories/fuzz/</loc>
     <lastmod>2023-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
