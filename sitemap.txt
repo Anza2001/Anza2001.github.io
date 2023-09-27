@@ -25,12 +25,12 @@ http://example.com/
 http://example.com/tags/cve-tenda/
 http://example.com/tags/house-of-botcake/
 http://example.com/tags/libc-2-31/
-http://example.com/categories/ctf/
 http://example.com/categories/cve/
+http://example.com/categories/ctf/
+http://example.com/categories/cve/cve-2018-5767/
 http://example.com/categories/ctf/pwn/
 http://example.com/categories/ctf/wp/
-http://example.com/categories/cve/cve-2018-5767/
 http://example.com/categories/other/
-http://example.com/categories/pwn/
 http://example.com/categories/fuzz/
+http://example.com/categories/pwn/
 http://example.com/categories/ctf/tricks/
