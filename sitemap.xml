@@ -4,7 +4,7 @@
   <url>
     <loc>http://example.com/2023/09/04/wp/</loc>
     
-    <lastmod>2023-09-29</lastmod>
+    <lastmod>2023-10-16</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -211,7 +211,7 @@
 
   <url>
     <loc>http://example.com/</loc>
-    <lastmod>2023-09-29</lastmod>
+    <lastmod>2023-10-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -219,21 +219,21 @@
   
   <url>
     <loc>http://example.com/tags/cve-tenda/</loc>
-    <lastmod>2023-09-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/tags/libc-2-31/</loc>
-    <lastmod>2023-09-29</lastmod>
+    <lastmod>2023-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/tags/house-of-botcake/</loc>
-    <lastmod>2023-09-29</lastmod>
+    <lastmod>2023-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/tags/libc-2-31/</loc>
+    <lastmod>2023-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -241,64 +241,64 @@
 
   
   <url>
-    <loc>http://example.com/categories/cve/</loc>
-    <lastmod>2023-09-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/categories/ctf/</loc>
-    <lastmod>2023-09-29</lastmod>
+    <lastmod>2023-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://example.com/categories/cve/cve-2018-5767/</loc>
-    <lastmod>2023-09-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/other/</loc>
-    <lastmod>2023-09-29</lastmod>
+    <loc>http://example.com/categories/cve/</loc>
+    <lastmod>2023-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/ctf/wp/</loc>
-    <lastmod>2023-09-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/categories/fuzz/</loc>
-    <lastmod>2023-09-29</lastmod>
+    <lastmod>2023-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/ctf/pwn/</loc>
-    <lastmod>2023-09-29</lastmod>
+    <lastmod>2023-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/cve/cve-2018-5767/</loc>
+    <lastmod>2023-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/other/</loc>
+    <lastmod>2023-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/pwn/</loc>
-    <lastmod>2023-09-29</lastmod>
+    <lastmod>2023-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/fuzz/</loc>
+    <lastmod>2023-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://example.com/categories/ctf/tricks/</loc>
-    <lastmod>2023-09-29</lastmod>
+    <lastmod>2023-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
